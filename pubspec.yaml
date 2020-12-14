@@ -72,6 +72,12 @@ flutter:
       fonts:
         - asset: fonts/ArefRuqaa-Regular.ttf
         - asset: fonts/ArefRuqaa-Bold.ttf
+    - family: Amiri
+      fonts:
+        - asset: fonts/Amiri-Regular.ttf
+        - asset: fonts/Amiri-Bold.ttf
+        - asset: fonts/Amiri-BoldItalic.ttf
+        - asset: fonts/Amiri-Italic.ttf
 
   #
   # For details regarding fonts from package dependencies,

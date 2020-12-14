@@ -15,7 +15,7 @@ class SearchingSession extends StatefulWidget {
 
 class _SearchingSessionState extends State<SearchingSession> {
   bool _validate = true;
-  String _error;
+  String _error = '';
   String _currentName;
   final _formKey = GlobalKey<FormState>();
 
@@ -23,7 +23,7 @@ class _SearchingSessionState extends State<SearchingSession> {
   Widget build(BuildContext context) {
     final user = Provider.of<User>(context);
 
-    Future<bool> searchingForNameMatching(String name) async {
+    Future<bool> joiningSession(String name) async {
       DocumentSnapshot doc = await sessionRef.document(name).get();
       if (doc.exists) {
         DatabaseService(uid: user.uid, name: name).joinSession(
@@ -65,7 +65,7 @@ class _SearchingSessionState extends State<SearchingSession> {
             ),
             onPressed: () async {
               if (_formKey.currentState.validate()) {
-                bool result = await searchingForNameMatching(_currentName);
+                bool result = await joiningSession(_currentName);
 
                 if (result == false) {
                   setState(() {

@@ -86,7 +86,7 @@ class DatabaseService {
     }
   }
 
-  List<Session> _chaptersListFromSnapshot(QuerySnapshot snapshot) {
+  List<Session> _sessionsListFromSnapshot(QuerySnapshot snapshot) {
     return snapshot.documents.map((doc) {
       return Session(
         description: doc.data['description'] ?? '',
@@ -95,10 +95,25 @@ class DatabaseService {
     }).toList();
   }
 
-  Stream<List<Session>> get chapters {
-    print(uid);
+  List<ChapterAssignment> _chaptersListFromSnapshot(DocumentSnapshot snapshot) {
+    String availableChapters = snapshot.data['available_chapters'];
+    List chapters = jsonDecode(availableChapters);
+    List<ChapterAssignment> chapterAssignmentList =
+        chapters.map((json) => ChapterAssignment.fromJson(json)).toList();
+
+    return chapterAssignmentList;
+  }
+
+  Stream<List<Session>> get session {
     return sessionCollection
         .where('readers', arrayContains: uid)
+        .snapshots()
+        .map(_sessionsListFromSnapshot);
+  }
+
+  Stream<List<ChapterAssignment>> get chapter {
+    return sessionCollection
+        .document(name)
         .snapshots()
         .map(_chaptersListFromSnapshot);
   }

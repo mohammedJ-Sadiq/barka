@@ -6,6 +6,7 @@ class SessionTile extends StatelessWidget {
   SessionTile({this.session});
   @override
   Widget build(BuildContext context) {
+    //print(session.name);
     return Padding(
       padding: EdgeInsets.only(top: 8.0),
       child: Card(

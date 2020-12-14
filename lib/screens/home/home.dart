@@ -36,7 +36,7 @@ class Home extends StatelessWidget {
     }
 
     return StreamProvider<List<Session>>.value(
-      value: DatabaseService(uid: Provider.of<User>(context).uid).chapters,
+      value: DatabaseService(uid: Provider.of<User>(context).uid).session,
       child: Scaffold(
         backgroundColor: Colors.green[50],
         appBar: AppBar(
