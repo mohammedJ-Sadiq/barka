@@ -27,7 +27,7 @@ class Chapters extends StatelessWidget {
                 image: DecorationImage(
                     image: AssetImage('assets/holly_symbols.png'),
                     fit: BoxFit.cover)),
-            child: ChapterList()),
+            child: ChapterList(sessionName: name)),
       ),
     );
   }

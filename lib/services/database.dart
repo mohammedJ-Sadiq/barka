@@ -15,7 +15,7 @@ class DatabaseService {
       Firestore.instance.collection('sessions');
 
   List<ChapterAssignment> chapterAssignmentObj = [
-    ChapterAssignment(uid: '', chapterNo: '')
+    ChapterAssignment(uid: '', chapterNo: '', name: '')
   ];
 
   DatabaseService({this.uid, this.name});
@@ -33,9 +33,11 @@ class DatabaseService {
 
   // to populate chapter list
   List<ChapterAssignment> populateChapterList() {
-    chapterAssignmentObj[0] = ChapterAssignment(uid: '', chapterNo: '1');
+    chapterAssignmentObj[0] = ChapterAssignment(
+        uid: '', chapterNo: '1', name: '', chapterStatus: false);
     for (var i = 2; i < 31; i++) {
-      chapterAssignmentObj.add(ChapterAssignment(uid: '', chapterNo: '${i}'));
+      chapterAssignmentObj.add(ChapterAssignment(
+          uid: '', chapterNo: '${i}', name: '', chapterStatus: false));
     }
     return chapterAssignmentObj;
   }
@@ -86,6 +88,38 @@ class DatabaseService {
     }
   }
 
+  // to update the username of chapter assigned by someone
+  Future updateChapterAssignmentUsername(
+      List<ChapterAssignment> chapters) async {
+    return await sessionCollection
+        .document(name)
+        .updateData({'available_chapters': jsonEncode(chapters)});
+  }
+
+  Future updateChapterAssignmentChapterStatus(ChapterAssignment chapter) async {
+    List<ChapterAssignment> chapters =
+        await _updateChapterStatusFromChapterAssignmentList(chapter, name);
+    return await sessionCollection
+        .document(name)
+        .updateData({'available_chapters': jsonEncode(chapters)});
+  }
+
+  Future<List<ChapterAssignment>> _updateChapterStatusFromChapterAssignmentList(
+      ChapterAssignment chapter, String sessionName) async {
+    String chapters = await sessionCollection
+        .document(sessionName)
+        .get()
+        .then((value) => value.data['available_chapters']);
+    List decodedChapters = jsonDecode(chapters);
+    List<ChapterAssignment> chapterAssignmentList = decodedChapters
+        .map((json) => ChapterAssignment.fromJson(json))
+        .toList();
+    int parsedChapterNo = int.parse(chapter.chapterNo);
+    chapterAssignmentList[parsedChapterNo - 1].chapterStatus =
+        chapter.chapterStatus;
+    return chapterAssignmentList;
+  }
+
   List<Session> _sessionsListFromSnapshot(QuerySnapshot snapshot) {
     return snapshot.documents.map((doc) {
       return Session(
@@ -102,6 +136,13 @@ class DatabaseService {
         chapters.map((json) => ChapterAssignment.fromJson(json)).toList();
 
     return chapterAssignmentList;
+  }
+
+  Future<String> getUsernameFromUid() async {
+    return await readerCollection
+        .document(uid)
+        .get()
+        .then((value) => value.data['name']);
   }
 
   Stream<List<Session>> get session {
