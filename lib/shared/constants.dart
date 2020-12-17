@@ -1,13 +1,25 @@
 import 'package:flutter/material.dart';
 
 const textInputDecoration = InputDecoration(
-    fillColor: Colors.white,
+    fillColor: Colors.transparent,
     filled: true,
+    border: OutlineInputBorder(
+      borderRadius: BorderRadius.all(
+        const Radius.circular(25),
+      ),
+      borderSide: BorderSide(color: Colors.white, width: 1.5),
+    ),
     enabledBorder: OutlineInputBorder(
-      borderSide: BorderSide(color: Colors.white, width: 2.0),
+      borderRadius: BorderRadius.all(
+        const Radius.circular(25),
+      ),
+      borderSide: BorderSide(color: Colors.blueGrey, width: 1.5),
     ),
     focusedBorder: OutlineInputBorder(
-        borderSide: BorderSide(color: Colors.pink, width: 2.0)));
+        borderRadius: BorderRadius.all(
+          const Radius.circular(25),
+        ),
+        borderSide: BorderSide(color: Colors.green, width: 1.5)));
 
 class MyShapeBorder extends ContinuousRectangleBorder {
   const MyShapeBorder(this.curveHeight);
