@@ -1,6 +1,7 @@
 import 'package:barka/models/chapter_assignment.dart';
 import 'package:barka/screens/home/chapter_list.dart';
 import 'package:barka/services/database.dart';
+import 'package:barka/shared/logo.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -12,22 +13,43 @@ class Chapters extends StatelessWidget {
     return StreamProvider<List<ChapterAssignment>>.value(
       value: DatabaseService(name: name).chapter,
       child: Scaffold(
-        backgroundColor: Colors.green[50],
-        appBar: AppBar(
-          centerTitle: true,
-          backgroundColor: Colors.green[400],
-          title: Text(
-            "بركة",
-            style: TextStyle(fontSize: 38, fontFamily: 'Aref'),
-          ),
-          actions: [],
-        ),
         body: Container(
-            decoration: BoxDecoration(
-                image: DecorationImage(
-                    image: AssetImage('assets/holly_symbols.png'),
-                    fit: BoxFit.cover)),
-            child: ChapterList(sessionName: name)),
+            color: Color(0xff1d2c26),
+            child: Column(children: [
+              Padding(
+                padding: const EdgeInsets.only(right: 25),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    Container(
+                      padding: EdgeInsets.only(bottom: 185),
+                      child: InkWell(
+                        onTap: () {
+                          Navigator.pop(context);
+                        },
+                        child: Icon(
+                          Icons.arrow_back,
+                          size: 30,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(right: 50.0),
+                      child: Logo,
+                    ),
+                  ],
+                ),
+              ),
+              Container(
+                  child: ChapterList(),
+                  height: 516,
+                  padding: EdgeInsets.symmetric(vertical: 20.0, horizontal: 10),
+                  decoration: BoxDecoration(
+                      border: Border.all(color: Colors.white),
+                      color: Colors.white,
+                      borderRadius: BorderRadius.all(Radius.circular(30)))),
+            ])),
       ),
     );
   }

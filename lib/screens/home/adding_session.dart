@@ -27,25 +27,54 @@ class _AddingSessionState extends State<AddingSession> {
       key: _formKey,
       child: Column(
         children: [
-          TextFormField(
-            decoration: textInputDecoration.copyWith(hintText: 'اسم الختمة'),
-            validator: SessionNameValidator.validate,
-            onChanged: (val) => setState(() => _currentName = val),
+          Padding(
+            padding: const EdgeInsets.only(top: 100.0),
+            child: TextFormField(
+              decoration:
+                  textInputDecorationHome.copyWith(hintText: 'اسم الختمة'),
+              validator: SessionNameValidator.validate,
+              onChanged: (val) => setState(() => _currentName = val),
+            ),
           ),
           SizedBox(
             height: 16,
           ),
           TextFormField(
-            decoration: textInputDecoration.copyWith(hintText: 'وصف الختمة'),
+            decoration:
+                textInputDecorationHome.copyWith(hintText: 'وصف الختمة'),
             onChanged: (val) => setState(() => _currentDescription = val),
           ),
-          RaisedButton(
-            color: Colors.green[600],
-            child: Text(
-              'بدأ ختمة',
-              style: TextStyle(color: Colors.white),
+          SizedBox(
+            height: 59,
+          ),
+          GestureDetector(
+            child: Container(
+              alignment: Alignment.center,
+              width: 330,
+              decoration: BoxDecoration(
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.grey.withOpacity(0.5),
+                    spreadRadius: 3,
+                    blurRadius: 7,
+                    offset: Offset(0, 3), // changes position of shadow
+                  ),
+                ],
+                borderRadius: BorderRadius.circular(50),
+                color: Color(0xff937b4c),
+              ),
+              child: Padding(
+                padding: EdgeInsets.all(12.0),
+                child: Text(
+                  'بدأ ختمة',
+                  style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold),
+                ),
+              ),
             ),
-            onPressed: () async {
+            onTap: () async {
               if (_formKey.currentState.validate()) {
                 dynamic result = await DatabaseService(uid: user.uid)
                     .createNewSession(_currentName, _currentDescription);

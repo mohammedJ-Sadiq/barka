@@ -8,19 +8,14 @@ class SessionTile extends StatelessWidget {
   Widget build(BuildContext context) {
     //print(session.name);
     return Padding(
-      padding: EdgeInsets.only(top: 8.0),
+      padding: EdgeInsets.all(0.0),
       child: Card(
-        margin: EdgeInsets.fromLTRB(20, 6, 20, 0),
-        child: ListTile(
-          leading: CircleAvatar(
-            radius: 25,
-            backgroundColor: Colors.green[200],
-            backgroundImage: AssetImage('assets/alfateha.jpg'),
-          ),
-          title: Text(session.name),
-          subtitle: Text(session.description),
-        ),
-      ),
+          margin: EdgeInsets.fromLTRB(20, 8, 20, 0),
+          child: Container(
+            height: 60,
+            width: 400,
+            child: Text(session.name),
+          )),
     );
   }
 }

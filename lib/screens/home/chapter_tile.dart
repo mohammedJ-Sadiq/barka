@@ -45,9 +45,9 @@ class _ChapterTileState extends State<ChapterTile> {
                 padding: const EdgeInsets.only(left: 15.0),
                 child: IconButton(
                   icon: Icon(
-                    Icons.thumb_up,
+                    Icons.check_box,
                     size: 35,
-                    color: Colors.green,
+                    color: Colors.green[800],
                   ),
                   onPressed: () async {
                     if (widget.chapter.uid ==
@@ -83,7 +83,7 @@ class _ChapterTileState extends State<ChapterTile> {
                 padding: const EdgeInsets.only(left: 15.0),
                 child: IconButton(
                   icon: Icon(
-                    Icons.thumb_up,
+                    Icons.check_box_outline_blank,
                     size: 35,
                   ),
                   onPressed: () async {

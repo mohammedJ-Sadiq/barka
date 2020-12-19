@@ -55,7 +55,7 @@ class _MainDrawerState extends State<MainDrawer> {
       child: Column(
         children: [
           Container(
-            height: 200,
+            height: 300,
             decoration: BoxDecoration(
               shape: BoxShape.rectangle,
               image: DecorationImage(
@@ -67,7 +67,7 @@ class _MainDrawerState extends State<MainDrawer> {
             child: Column(
               children: [
                 Padding(
-                  padding: EdgeInsets.fromLTRB(262, 5, 0, 91),
+                  padding: EdgeInsets.fromLTRB(262, 5, 0, 200),
                   child: IconButton(
                     icon: Icon(
                       Icons.edit,
@@ -86,14 +86,11 @@ class _MainDrawerState extends State<MainDrawer> {
                   decoration: BoxDecoration(
                       border: Border.all(color: Colors.brown[900]),
                       color: Colors.white.withOpacity(0.5),
-                      borderRadius: BorderRadius.all(Radius.circular(12))),
+                      borderRadius: BorderRadius.all(Radius.circular(7))),
                   child: Center(
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 0.0),
-                      child: Text(
-                        _username,
-                        style: TextStyle(fontSize: 20, color: Colors.black),
-                      ),
+                    child: Text(
+                      _username,
+                      style: TextStyle(fontSize: 20, color: Colors.black),
                     ),
                   ),
                 ),
@@ -139,7 +136,7 @@ class _MainDrawerState extends State<MainDrawer> {
                   ),
                 ),
                 SizedBox(
-                  height: 392,
+                  height: 292,
                 ),
                 Divider(
                   color: Colors.brown,

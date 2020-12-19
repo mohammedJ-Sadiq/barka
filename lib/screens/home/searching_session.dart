@@ -42,28 +42,46 @@ class _SearchingSessionState extends State<SearchingSession> {
       key: _formKey,
       child: Column(
         children: [
-          Text(
-            'للبحث عن ختمة معينة عن طريق الاسم',
-            style: TextStyle(color: Colors.green[400]),
-          ),
-          SizedBox(
-            height: 10,
-          ),
-          TextFormField(
-            validator: SessionNameValidator.validate,
-            decoration: textInputDecoration.copyWith(hintText: 'اسم الختمة'),
-            onChanged: (val) => setState(() => _currentName = val),
-          ),
-          SizedBox(
-            height: 16,
-          ),
-          RaisedButton(
-            color: Colors.green[600],
-            child: Text(
-              'انضم للختمة',
-              style: TextStyle(color: Colors.white),
+          Padding(
+            padding: const EdgeInsets.only(top: 100.0),
+            child: TextFormField(
+              validator: SessionNameValidator.validate,
+              decoration:
+                  textInputDecorationHome.copyWith(hintText: 'اسم الختمة'),
+              onChanged: (val) => setState(() => _currentName = val),
             ),
-            onPressed: () async {
+          ),
+          SizedBox(
+            height: 120,
+          ),
+          GestureDetector(
+            child: Container(
+              alignment: Alignment.center,
+              width: 330,
+              decoration: BoxDecoration(
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.grey.withOpacity(0.5),
+                    spreadRadius: 3,
+                    blurRadius: 7,
+                    offset: Offset(0, 3), // changes position of shadow
+                  ),
+                ],
+                borderRadius: BorderRadius.circular(50),
+                color: Color(0xff937b4c),
+              ),
+              child: Padding(
+                padding: EdgeInsets.all(12.0),
+                child: Text(
+                  'الانضمام للختمة',
+                  style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold),
+                ),
+              ),
+            ),
+            onTap: () async {
               if (_formKey.currentState.validate()) {
                 bool result = await joiningSession(_currentName);
 
