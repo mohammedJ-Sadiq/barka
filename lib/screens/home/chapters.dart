@@ -10,6 +10,9 @@ class Chapters extends StatelessWidget {
   Chapters({this.name});
   @override
   Widget build(BuildContext context) {
+    Size size = MediaQuery.of(context).size;
+    double width = size.width;
+    double height = size.height;
     return StreamProvider<List<ChapterAssignment>>.value(
       value: DatabaseService(name: name).chapter,
       child: Scaffold(
@@ -17,12 +20,12 @@ class Chapters extends StatelessWidget {
             color: Color(0xff1d2c26),
             child: Column(children: [
               Padding(
-                padding: const EdgeInsets.only(right: 25),
+                padding: EdgeInsets.only(right: width * 0.03),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [
                     Container(
-                      padding: EdgeInsets.only(bottom: 185),
+                      padding: EdgeInsets.only(bottom: height * 0.23),
                       child: InkWell(
                         onTap: () {
                           Navigator.pop(context);
@@ -35,16 +38,19 @@ class Chapters extends StatelessWidget {
                       ),
                     ),
                     Padding(
-                      padding: const EdgeInsets.only(right: 50.0),
-                      child: Logo,
+                      padding: EdgeInsets.only(right: width * 0.12),
+                      child: logo(width, height),
                     ),
                   ],
                 ),
               ),
               Container(
-                  child: ChapterList(),
-                  height: 516,
-                  padding: EdgeInsets.symmetric(vertical: 20.0, horizontal: 10),
+                  child: ChapterList(
+                    sessionName: name,
+                  ),
+                  height: height - height * 0.4,
+                  padding: EdgeInsets.symmetric(
+                      vertical: height * 0.02, horizontal: 0.02),
                   decoration: BoxDecoration(
                       border: Border.all(color: Colors.white),
                       color: Colors.white,

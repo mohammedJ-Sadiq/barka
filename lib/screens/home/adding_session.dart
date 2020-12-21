@@ -21,85 +21,90 @@ class _AddingSessionState extends State<AddingSession> {
 
   @override
   Widget build(BuildContext context) {
+    Size size = MediaQuery.of(context).size;
+    double width = size.width;
+    double height = size.height;
     final user = Provider.of<User>(context);
 
-    return Form(
-      key: _formKey,
-      child: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.only(top: 100.0),
-            child: TextFormField(
-              decoration:
-                  textInputDecorationHome.copyWith(hintText: 'اسم الختمة'),
-              validator: SessionNameValidator.validate,
-              onChanged: (val) => setState(() => _currentName = val),
-            ),
-          ),
-          SizedBox(
-            height: 16,
-          ),
-          TextFormField(
-            decoration:
-                textInputDecorationHome.copyWith(hintText: 'وصف الختمة'),
-            onChanged: (val) => setState(() => _currentDescription = val),
-          ),
-          SizedBox(
-            height: 59,
-          ),
-          GestureDetector(
-            child: Container(
-              alignment: Alignment.center,
-              width: 330,
-              decoration: BoxDecoration(
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.grey.withOpacity(0.5),
-                    spreadRadius: 3,
-                    blurRadius: 7,
-                    offset: Offset(0, 3), // changes position of shadow
+    return Scaffold(
+      resizeToAvoidBottomInset: false,
+      body: SingleChildScrollView(
+        child: Form(
+          key: _formKey,
+          child: Column(
+            children: [
+              TextFormField(
+                decoration:
+                    textInputDecorationHome.copyWith(hintText: 'اسم الختمة'),
+                validator: SessionNameValidator.validate,
+                onChanged: (val) => setState(() => _currentName = val),
+              ),
+              SizedBox(
+                height: height * 0.03,
+              ),
+              TextFormField(
+                decoration:
+                    textInputDecorationHome.copyWith(hintText: 'وصف الختمة'),
+                onChanged: (val) => setState(() => _currentDescription = val),
+              ),
+              SizedBox(
+                height: height * 0.18,
+              ),
+              GestureDetector(
+                child: Container(
+                  alignment: Alignment.center,
+                  width: width,
+                  decoration: BoxDecoration(
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.grey.withOpacity(0.5),
+                        spreadRadius: 3,
+                        blurRadius: 7,
+                        offset: Offset(0, 3), // changes position of shadow
+                      ),
+                    ],
+                    borderRadius: BorderRadius.circular(50),
+                    color: Color(0xff937b4c),
                   ),
-                ],
-                borderRadius: BorderRadius.circular(50),
-                color: Color(0xff937b4c),
-              ),
-              child: Padding(
-                padding: EdgeInsets.all(12.0),
-                child: Text(
-                  'بدأ ختمة',
-                  style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold),
+                  child: Padding(
+                    padding: EdgeInsets.all(12.0),
+                    child: Text(
+                      'بدأ ختمة',
+                      style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold),
+                    ),
+                  ),
                 ),
-              ),
-            ),
-            onTap: () async {
-              if (_formKey.currentState.validate()) {
-                dynamic result = await DatabaseService(uid: user.uid)
-                    .createNewSession(_currentName, _currentDescription);
+                onTap: () async {
+                  if (_formKey.currentState.validate()) {
+                    dynamic result = await DatabaseService(uid: user.uid)
+                        .createNewSession(_currentName, _currentDescription);
 
-                if (result == 'error') {
-                  setState(() {
-                    _error = "اسم هذه الختمة مأخوذ, الرجاء اختيار اسم آخر";
-                  });
-                  print(result);
-                }
-                if (result == null) {
-                  print(result);
-                  Navigator.pop(context);
-                }
-              }
-            },
+                    if (result == 'error') {
+                      setState(() {
+                        _error = "اسم هذه الختمة مأخوذ, الرجاء اختيار اسم آخر";
+                      });
+                      print(result);
+                    }
+                    if (result == null) {
+                      print(result);
+                      Navigator.pop(context);
+                    }
+                  }
+                },
+              ),
+              SizedBox(
+                height: height * 0.02,
+              ),
+              Text(
+                _error,
+                style: TextStyle(color: Colors.red, fontSize: 14.0),
+              )
+            ],
           ),
-          SizedBox(
-            height: 20.0,
-          ),
-          Text(
-            _error,
-            style: TextStyle(color: Colors.red, fontSize: 14.0),
-          )
-        ],
+        ),
       ),
     );
   }

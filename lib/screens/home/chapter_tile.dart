@@ -16,12 +16,16 @@ class ChapterTile extends StatefulWidget {
 class _ChapterTileState extends State<ChapterTile> {
   @override
   Widget build(BuildContext context) {
+    Size size = MediaQuery.of(context).size;
+    double width = size.width;
+    double height = size.height;
     if (widget.chapter.uid == '') {
       return Padding(
-        padding: EdgeInsets.only(top: 8.0),
+        padding: EdgeInsets.only(top: height * 0.01),
         child: Card(
           elevation: 0.0,
-          margin: EdgeInsets.fromLTRB(20, 6, 20, 0),
+          margin: EdgeInsets.fromLTRB(
+              width * 0.02, height * 0.005, width * 0.02, 0),
           child: ListTile(
             title: Text(
               "الجزء   ${widget.chapter.chapterNo}",
@@ -34,15 +38,16 @@ class _ChapterTileState extends State<ChapterTile> {
     } else {
       if (widget.chapter.chapterStatus) {
         return Padding(
-          padding: EdgeInsets.only(top: 8.0),
+          padding: EdgeInsets.only(top: height * 0.01),
           child: Card(
             shadowColor: Colors.green[300],
             elevation: 3.0,
             color: Colors.grey[300],
-            margin: EdgeInsets.fromLTRB(20, 6, 20, 0),
+            margin: EdgeInsets.fromLTRB(
+                width * 0.02, height * 0.005, width * 0.02, 0),
             child: ListTile(
               trailing: Padding(
-                padding: const EdgeInsets.only(left: 15.0),
+                padding: EdgeInsets.only(left: width * 0.03),
                 child: IconButton(
                   icon: Icon(
                     Icons.check_box,
@@ -72,12 +77,13 @@ class _ChapterTileState extends State<ChapterTile> {
         );
       } else {
         return Padding(
-          padding: EdgeInsets.only(top: 8.0),
+          padding: EdgeInsets.only(top: height * 0.01),
           child: Card(
             shadowColor: Colors.grey[300],
             elevation: 3.0,
             color: Colors.grey[300],
-            margin: EdgeInsets.fromLTRB(20, 6, 20, 0),
+            margin: EdgeInsets.fromLTRB(
+                width * 0.02, height * 0.005, width * 0.02, 0),
             child: ListTile(
               trailing: Padding(
                 padding: const EdgeInsets.only(left: 15.0),
