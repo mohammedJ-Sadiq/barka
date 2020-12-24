@@ -4,11 +4,15 @@ class Session {
   final String creatorId;
   final List<String> readers;
   final String chapters;
+  final int noOfChaptersTaken;
+  final int noOfChaptersFinished;
 
   Session(
       {this.name,
       this.description,
       this.creatorId,
       this.readers,
-      this.chapters});
+      this.chapters,
+      this.noOfChaptersTaken,
+      this.noOfChaptersFinished});
 }

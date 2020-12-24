@@ -7,7 +7,9 @@ import 'package:provider/provider.dart';
 
 class Chapters extends StatelessWidget {
   final String name;
-  Chapters({this.name});
+  final int noOfChaptersTaken;
+  final int noOfChaptersFinished;
+  Chapters({this.name, this.noOfChaptersTaken, this.noOfChaptersFinished});
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
@@ -47,6 +49,8 @@ class Chapters extends StatelessWidget {
               Container(
                   child: ChapterList(
                     sessionName: name,
+                    noOfChaptersTaken: noOfChaptersTaken,
+                    noOfChaptersFinished: noOfChaptersFinished,
                   ),
                   height: height - height * 0.4,
                   padding: EdgeInsets.symmetric(

@@ -1,16 +1,18 @@
+import 'package:barka/models/chaptersTaken.dart';
 import 'package:barka/models/session.dart';
 import 'package:flutter/material.dart';
 
 class SessionTile extends StatelessWidget {
   final Session session;
-  SessionTile({this.session});
+  final ChaptersTaken chaptersTaken;
+  SessionTile({this.session, this.chaptersTaken});
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
     double width = size.width;
     double height = size.height;
     return Container(
-      height: height * 0.11,
+      height: 75,
       margin: EdgeInsets.fromLTRB(width * 0.05, height * 0.01, width * 0.05, 0),
       child: Card(
         elevation: 8.0,
@@ -33,7 +35,7 @@ class SessionTile extends StatelessWidget {
                       color: Color(0xff937b4c),
                     ),
                     child: Text(
-                      '1',
+                      '${chaptersTaken.noOfChaptersTaken}',
                       style: TextStyle(color: Colors.white, fontSize: 10),
                     ),
                   ),
@@ -57,7 +59,7 @@ class SessionTile extends StatelessWidget {
                   Padding(
                     padding: const EdgeInsets.only(left: 20.0),
                     child: Container(
-                      child: Text('6'),
+                      child: Text('${session.noOfChaptersTaken}'),
                       width: width / 3,
                     ),
                   ),
@@ -74,7 +76,8 @@ class SessionTile extends StatelessWidget {
             Spacer(),
             Container(
               height: height * 0.004,
-              width: (width - (width * 0.15)) * 1,
+              width: (width - (width * 0.15)) *
+                  (session.noOfChaptersFinished / 30),
               color: Colors.green[800],
             )
           ],

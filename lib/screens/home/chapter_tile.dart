@@ -7,7 +7,8 @@ import 'package:provider/provider.dart';
 class ChapterTile extends StatefulWidget {
   final ChapterAssignment chapter;
   final String sessionName;
-  ChapterTile({this.chapter, this.sessionName});
+  int noOfChaptersFinished;
+  ChapterTile({this.chapter, this.sessionName, this.noOfChaptersFinished});
 
   @override
   _ChapterTileState createState() => _ChapterTileState();
@@ -16,6 +17,7 @@ class ChapterTile extends StatefulWidget {
 class _ChapterTileState extends State<ChapterTile> {
   @override
   Widget build(BuildContext context) {
+    // int _noOfChaptersFinished = widget.noOfChaptersFinished;
     Size size = MediaQuery.of(context).size;
     double width = size.width;
     double height = size.height;
@@ -57,12 +59,17 @@ class _ChapterTileState extends State<ChapterTile> {
                   onPressed: () async {
                     if (widget.chapter.uid ==
                         Provider.of<User>(context, listen: false).uid) {
+                      print(widget.noOfChaptersFinished);
                       setState(() {
                         widget.chapter.chapterStatus =
                             !widget.chapter.chapterStatus;
+                        widget.noOfChaptersFinished--;
                       });
+                      print(widget.noOfChaptersFinished);
                       await DatabaseService(name: widget.sessionName)
                           .updateChapterAssignmentChapterStatus(widget.chapter);
+                      await DatabaseService(name: widget.sessionName)
+                          .updateNoOfChaptersFinished();
                     }
                   },
                 ),
@@ -99,8 +106,11 @@ class _ChapterTileState extends State<ChapterTile> {
                         widget.chapter.chapterStatus =
                             !widget.chapter.chapterStatus;
                       });
+
                       await DatabaseService(name: widget.sessionName)
                           .updateChapterAssignmentChapterStatus(widget.chapter);
+                      await DatabaseService(name: widget.sessionName)
+                          .updateNoOfChaptersFinished();
                     }
                   },
                 ),

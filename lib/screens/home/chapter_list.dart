@@ -10,7 +10,10 @@ CollectionReference readerCollection = Firestore.instance.collection('readers');
 
 class ChapterList extends StatefulWidget {
   final String sessionName;
-  ChapterList({this.sessionName});
+  int noOfChaptersTaken;
+  int noOfChaptersFinished;
+  ChapterList(
+      {this.sessionName, this.noOfChaptersTaken, this.noOfChaptersFinished});
   @override
   _ChapterListState createState() => _ChapterListState();
 }
@@ -43,8 +46,14 @@ class _ChapterListState extends State<ChapterList> {
                     chapters[index].uid = currentUserUid;
                     chapters[index].name = _username;
                   });
+                  print(widget.noOfChaptersTaken);
                   await DatabaseService(name: widget.sessionName)
                       .updateChapterAssignmentUsername(chapters);
+                  await DatabaseService(name: widget.sessionName)
+                      .updateNoOfChaptersTaken();
+                  await DatabaseService(
+                          uid: currentUserUid, name: widget.sessionName)
+                      .updateNoOfChaptersTakenForAUser(true);
                 } else {
                   if (chapterUid == currentUserUid &&
                       chapters[index].chapterStatus == false) {
@@ -52,14 +61,21 @@ class _ChapterListState extends State<ChapterList> {
                       chapters[index].uid = '';
                       chapters[index].name = '';
                     });
+                    print(widget.noOfChaptersTaken);
                     await DatabaseService(name: widget.sessionName)
                         .updateChapterAssignmentUsername(chapters);
+                    await DatabaseService(name: widget.sessionName)
+                        .updateNoOfChaptersTaken();
+                    await DatabaseService(
+                            uid: currentUserUid, name: widget.sessionName)
+                        .updateNoOfChaptersTakenForAUser(false);
                   }
                 }
               },
               child: ChapterTile(
                 chapter: chapters[index],
                 sessionName: widget.sessionName,
+                noOfChaptersFinished: widget.noOfChaptersFinished,
               ));
         });
   }

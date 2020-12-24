@@ -1,3 +1,4 @@
+import 'package:barka/models/chaptersTaken.dart';
 import 'package:barka/models/session.dart';
 import 'package:barka/models/user.dart';
 import 'package:barka/screens/home/drawer.dart';
@@ -16,8 +17,16 @@ class Home extends StatelessWidget {
     Size size = MediaQuery.of(context).size;
     double width = size.width;
     double height = size.height;
-    return StreamProvider<List<Session>>.value(
-        value: DatabaseService(uid: Provider.of<User>(context).uid).session,
+    return MultiProvider(
+        providers: [
+          StreamProvider<List<Session>>.value(
+            value: DatabaseService(uid: Provider.of<User>(context).uid).session,
+          ),
+          StreamProvider<List<ChaptersTaken>>.value(
+            value: DatabaseService(uid: Provider.of<User>(context).uid)
+                .chapterTaken,
+          )
+        ],
         child: Scaffold(
           key: _key,
           body: Container(

@@ -1,4 +1,5 @@
 import 'package:barka/models/chapter_assignment.dart';
+import 'package:barka/models/chaptersTaken.dart';
 import 'package:barka/models/session.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'dart:convert';
@@ -7,6 +8,9 @@ class DatabaseService {
   final String uid;
   final String name;
   List<String> readers = [''];
+  List<ChaptersTaken> chaptersTaken = [
+    ChaptersTaken(sessionName: '', noOfChaptersTaken: 0)
+  ];
 
   final CollectionReference readerCollection =
       Firestore.instance.collection('readers');
@@ -43,11 +47,11 @@ class DatabaseService {
   }
 
   // to create the user data once he register
-  Future createUserData(String name, List<String> chaptersTaken) async {
+  Future createUserData(String name) async {
     return await readerCollection.document(uid).setData({
       'uid': uid,
       'name': name,
-      'chaptersTaken': chaptersTaken,
+      'chaptersTaken': jsonEncode(chaptersTaken),
     });
   }
 
@@ -65,6 +69,8 @@ class DatabaseService {
         'description': description,
         'available_chapters': availableChapters,
         'readers': setReaderUidReadersList(readers),
+        'no_of_chapters_taken': 0,
+        'no_of_chapters_finished': 0
       });
     } else {
       return 'error';
@@ -72,8 +78,14 @@ class DatabaseService {
   }
 
   // to join an eixsted session
-  Future joinSession(String name, String description, String creatorId,
-      String availableChapters, List<String> readers) async {
+  Future joinSession(
+      String name,
+      String description,
+      String creatorId,
+      String availableChapters,
+      List<String> readers,
+      int noOfChaptersTaken,
+      int noOfChaptersFinished) async {
     DocumentSnapshot doc = await sessionCollection.document(name).get();
     if (doc.exists) {
       return await sessionCollection.document(name).setData({
@@ -82,10 +94,149 @@ class DatabaseService {
         'description': description,
         'available_chapters': availableChapters,
         'readers': setReaderUidReadersList(readers),
+        'no_of_chapters_taken': noOfChaptersTaken,
+        'no_of_chapters_finished': noOfChaptersFinished,
       });
     } else {
       return 'error';
     }
+  }
+
+  Future<List<ChaptersTaken>> getChaptersTakenFromUid() async {
+    String chaptersTaken = await readerCollection
+        .document(uid)
+        .get()
+        .then((value) => value.data['chaptersTaken']);
+    List decodedChaptersTaken = jsonDecode(chaptersTaken);
+    List<ChaptersTaken> chaptersTakenList = decodedChaptersTaken
+        .map((json) => ChaptersTaken.fromJson(json))
+        .toList();
+
+    return chaptersTakenList;
+  }
+
+  // to update the number of chpaters taken in a session
+  Future updateNoOfChaptersTaken() async {
+    String chapters = await sessionCollection
+        .document(name)
+        .get()
+        .then((value) => value.data['available_chapters']);
+    List decodedChapters = jsonDecode(chapters);
+    List<ChapterAssignment> chapterAssignmentList = decodedChapters
+        .map((json) => ChapterAssignment.fromJson(json))
+        .toList();
+    int noOfChaptersTaken =
+        _getNoOfChaptersTakenFromChapterAssignment(chapterAssignmentList);
+    return await sessionCollection
+        .document(name)
+        .updateData({'no_of_chapters_taken': noOfChaptersTaken});
+  }
+
+  int _getNoOfChaptersTakenFromChapterAssignment(
+      List<ChapterAssignment> chapters) {
+    int _noOfChaptersTaken = 0;
+    for (var i = 0; i < 30; i++) {
+      if (chapters[i].uid != '') {
+        _noOfChaptersTaken++;
+      }
+    }
+    return _noOfChaptersTaken;
+  }
+
+  // to update the number of chapter taken by a user in all sessions
+  Future updateNoOfChaptersTakenForAUser(bool increase) async {
+    String chaptersTaken = await readerCollection
+        .document(uid)
+        .get()
+        .then((value) => value.data['chaptersTaken']);
+    List decodedChaptersTaken = jsonDecode(chaptersTaken);
+    List<ChaptersTaken> chaptersTakenList = decodedChaptersTaken
+        .map((json) => ChaptersTaken.fromJson(json))
+        .toList();
+    List<ChaptersTaken> modifiedChaptersTaken =
+        await _updateChaptersTakenByUser(chaptersTakenList, increase);
+
+    return await readerCollection
+        .document(uid)
+        .updateData({'chaptersTaken': jsonEncode(modifiedChaptersTaken)});
+  }
+
+  _updateChaptersTakenByUser(List<ChaptersTaken> chaptersTaken, bool increase) {
+    if (increase) {
+      for (var i = 0; i < chaptersTaken.length; i++) {
+        if (chaptersTaken[i].sessionName == name) {
+          chaptersTaken[i].noOfChaptersTaken++;
+          return chaptersTaken;
+        }
+      }
+      return null;
+    } else {
+      for (var i = 0; i < chaptersTaken.length; i++) {
+        if (chaptersTaken[i].sessionName == name) {
+          chaptersTaken[i].noOfChaptersTaken--;
+          return chaptersTaken;
+        }
+      }
+    }
+  }
+
+  Future populateChaptersTakenWhenJoiningSession() async {
+    String chaptersTaken = await readerCollection
+        .document(uid)
+        .get()
+        .then((value) => value.data['chaptersTaken']);
+    List decodedChaptersTaken = jsonDecode(chaptersTaken);
+    List<ChaptersTaken> chaptersTakenList = decodedChaptersTaken
+        .map((json) => ChaptersTaken.fromJson(json))
+        .toList();
+
+    for (var i = 0; i < chaptersTakenList.length; i++) {
+      if (chaptersTakenList[i].sessionName == name) {
+        return null;
+      }
+    }
+
+    if (chaptersTakenList[0].sessionName == '') {
+      chaptersTakenList[0] =
+          ChaptersTaken(sessionName: name, noOfChaptersTaken: 0);
+      return await readerCollection
+          .document(uid)
+          .updateData({'chaptersTaken': jsonEncode(chaptersTakenList)});
+    } else {
+      chaptersTakenList
+          .add(ChaptersTaken(sessionName: name, noOfChaptersTaken: 0));
+      return await readerCollection
+          .document(uid)
+          .updateData({'chaptersTaken': jsonEncode(chaptersTakenList)});
+    }
+  }
+
+  // to update the number of chpaters finished in a session
+  Future updateNoOfChaptersFinished() async {
+    String chapters = await sessionCollection
+        .document(name)
+        .get()
+        .then((value) => value.data['available_chapters']);
+    List decodedChapters = jsonDecode(chapters);
+    List<ChapterAssignment> chapterAssignmentList = decodedChapters
+        .map((json) => ChapterAssignment.fromJson(json))
+        .toList();
+    int noOfChaptersFinished =
+        _getNoOfChaptersFinishedFromChapterAssignment(chapterAssignmentList);
+    return await sessionCollection
+        .document(name)
+        .updateData({'no_of_chapters_finished': noOfChaptersFinished});
+  }
+
+  int _getNoOfChaptersFinishedFromChapterAssignment(
+      List<ChapterAssignment> chapters) {
+    int _noOfChaptersFinished = 0;
+    for (var i = 0; i < 30; i++) {
+      if (chapters[i].chapterStatus != false) {
+        _noOfChaptersFinished++;
+      }
+    }
+    return _noOfChaptersFinished;
   }
 
   // to update the username of chapter assigned by someone
@@ -96,6 +247,7 @@ class DatabaseService {
         .updateData({'available_chapters': jsonEncode(chapters)});
   }
 
+  // to update the status of a chpater (finished or not)
   Future updateChapterAssignmentChapterStatus(ChapterAssignment chapter) async {
     List<ChapterAssignment> chapters =
         await _updateChapterStatusFromChapterAssignmentList(chapter, name);
@@ -123,9 +275,10 @@ class DatabaseService {
   List<Session> _sessionsListFromSnapshot(QuerySnapshot snapshot) {
     return snapshot.documents.map((doc) {
       return Session(
-        description: doc.data['description'] ?? '',
-        name: doc.data['name'] ?? '',
-      );
+          description: doc.data['description'] ?? '',
+          name: doc.data['name'] ?? '',
+          noOfChaptersTaken: doc.data['no_of_chapters_taken'] ?? 0,
+          noOfChaptersFinished: doc.data['no_of_chapters_finished'] ?? 0);
     }).toList();
   }
 
@@ -136,6 +289,16 @@ class DatabaseService {
         chapters.map((json) => ChapterAssignment.fromJson(json)).toList();
 
     return chapterAssignmentList;
+  }
+
+  List<ChaptersTaken> _chaptersTakenFromSnapshot(DocumentSnapshot snapshot) {
+    String chaptersTaken = snapshot.data['chaptersTaken'];
+    List decodedChaptersTaken = jsonDecode(chaptersTaken);
+    List<ChaptersTaken> chaptersTakenList = decodedChaptersTaken
+        .map((json) => ChaptersTaken.fromJson(json))
+        .toList();
+
+    return chaptersTakenList;
   }
 
   Future<String> getUsernameFromUid() async {
@@ -157,5 +320,12 @@ class DatabaseService {
         .document(name)
         .snapshots()
         .map(_chaptersListFromSnapshot);
+  }
+
+  Stream<List<ChaptersTaken>> get chapterTaken {
+    return readerCollection
+        .document(uid)
+        .snapshots()
+        .map(_chaptersTakenFromSnapshot);
   }
 }

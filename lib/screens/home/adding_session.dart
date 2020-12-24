@@ -89,7 +89,8 @@ class _AddingSessionState extends State<AddingSession> {
                       print(result);
                     }
                     if (result == null) {
-                      print(result);
+                      await DatabaseService(uid: user.uid, name: _currentName)
+                          .populateChaptersTakenWhenJoiningSession();
                       Navigator.pop(context);
                     }
                   }

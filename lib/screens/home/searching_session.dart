@@ -30,11 +30,14 @@ class _SearchingSessionState extends State<SearchingSession> {
       DocumentSnapshot doc = await sessionRef.document(name).get();
       if (doc.exists) {
         DatabaseService(uid: user.uid, name: name).joinSession(
-            doc.data['name'],
-            doc.data['description'],
-            doc.data['creator'],
-            doc.data['available_chapters'],
-            List.from(doc.data['readers']));
+          doc.data['name'],
+          doc.data['description'],
+          doc.data['creator'],
+          doc.data['available_chapters'],
+          List.from(doc.data['readers']),
+          doc.data['no_of_chapters_taken'],
+          doc.data['no_of_chapters_finished'],
+        );
       } else {
         _validate = false;
       }
@@ -93,6 +96,8 @@ class _SearchingSessionState extends State<SearchingSession> {
                         _error = "لاتوجد ختمة بهذا الأسم";
                       });
                     } else {
+                      await DatabaseService(uid: user.uid, name: _currentName)
+                          .populateChaptersTakenWhenJoiningSession();
                       Navigator.pop(context);
                     }
                   }
