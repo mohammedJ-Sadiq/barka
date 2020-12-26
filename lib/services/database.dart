@@ -177,6 +177,49 @@ class DatabaseService {
           return chaptersTaken;
         }
       }
+      return null;
+    }
+  }
+
+  // to update the number of chapter taken by a user in all sessions
+  // when the user mark the taken chapter as finished
+  Future updateNoOfChaptersTakenForAUserWhenMarkedFinished(
+      bool increase) async {
+    String chaptersTaken = await readerCollection
+        .document(uid)
+        .get()
+        .then((value) => value.data['chaptersTaken']);
+    List decodedChaptersTaken = jsonDecode(chaptersTaken);
+    List<ChaptersTaken> chaptersTakenList = decodedChaptersTaken
+        .map((json) => ChaptersTaken.fromJson(json))
+        .toList();
+    List<ChaptersTaken> modifiedChaptersTaken =
+        await _updateChaptersTakenByUserWhenMarkedFinished(
+            chaptersTakenList, increase);
+
+    return await readerCollection
+        .document(uid)
+        .updateData({'chaptersTaken': jsonEncode(modifiedChaptersTaken)});
+  }
+
+  _updateChaptersTakenByUserWhenMarkedFinished(
+      List<ChaptersTaken> chaptersTaken, bool increase) {
+    if (increase) {
+      for (var i = 0; i < chaptersTaken.length; i++) {
+        if (chaptersTaken[i].sessionName == name) {
+          chaptersTaken[i].noOfChaptersTaken--;
+          return chaptersTaken;
+        }
+      }
+      return null;
+    } else {
+      for (var i = 0; i < chaptersTaken.length; i++) {
+        if (chaptersTaken[i].sessionName == name) {
+          chaptersTaken[i].noOfChaptersTaken++;
+          return chaptersTaken;
+        }
+      }
+      return null;
     }
   }
 
@@ -254,6 +297,48 @@ class DatabaseService {
     return await sessionCollection
         .document(name)
         .updateData({'available_chapters': jsonEncode(chapters)});
+  }
+
+  // to reset a specific session
+  Future resetChapterAssignmentPage() async {
+    await resetChaptersTakenForAllUser();
+    return await sessionCollection.document(name).updateData({
+      'available_chapters': jsonEncode(populateChapterList()),
+      'no_of_chapters_finished': 0,
+      'no_of_chapters_taken': 0,
+    });
+  }
+
+  // to reset all chapters taken of all users in a session
+  Future<void> resetChaptersTakenForAllUser() async {
+    List readers = await sessionCollection
+        .document(name)
+        .get()
+        .then((value) => value.data['readers']);
+
+    for (var i = 0; i < readers.length; i++) {
+      await readerCollection.document(readers[i]).updateData({
+        'chaptersTaken':
+            await _resetSessionFromReadersCollection(readers[i], name)
+      });
+    }
+  }
+
+  Future<String> _resetSessionFromReadersCollection(
+      String readerUid, String sessionName) async {
+    String chaptersTaken = await readerCollection
+        .document(readerUid)
+        .get()
+        .then((value) => value.data['chaptersTaken']);
+    List decodedChapters = jsonDecode(chaptersTaken);
+    List<ChaptersTaken> chaptersTakenList =
+        decodedChapters.map((json) => ChaptersTaken.fromJson(json)).toList();
+    for (var i = 0; i < chaptersTakenList.length; i++) {
+      if (chaptersTakenList[i].sessionName == sessionName) {
+        chaptersTakenList[i].noOfChaptersTaken = 0;
+      }
+    }
+    return jsonEncode(chaptersTakenList);
   }
 
   Future<List<ChapterAssignment>> _updateChapterStatusFromChapterAssignmentList(

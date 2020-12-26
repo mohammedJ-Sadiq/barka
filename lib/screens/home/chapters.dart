@@ -2,6 +2,7 @@ import 'package:barka/models/chapter_assignment.dart';
 import 'package:barka/screens/home/chapter_list.dart';
 import 'package:barka/services/database.dart';
 import 'package:barka/shared/logo.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -42,6 +43,48 @@ class Chapters extends StatelessWidget {
                     Padding(
                       padding: EdgeInsets.only(right: width * 0.12),
                       child: logo(width, height),
+                    ),
+                    Padding(
+                      padding: EdgeInsets.only(right: width * 0.10),
+                      child: Container(
+                        padding: EdgeInsets.only(bottom: height * 0.23),
+                        child: InkWell(
+                          onTap: () {
+                            showDialog(
+                                context: context,
+                                builder: (_) => new CupertinoAlertDialog(
+                                      title: new Text('إعادة الختمة'),
+                                      content:
+                                          new Text("متأكد من إعادة الختمة؟!"),
+                                      actions: [
+                                        FlatButton(
+                                          child: Text(
+                                            'نعم',
+                                            style: TextStyle(
+                                                color: Colors.red[800]),
+                                          ),
+                                          onPressed: () async {
+                                            await DatabaseService(name: name)
+                                                .resetChapterAssignmentPage();
+                                            Navigator.of(context).pop();
+                                          },
+                                        ),
+                                        FlatButton(
+                                          child: Text('لأ'),
+                                          onPressed: () {
+                                            Navigator.of(context).pop();
+                                          },
+                                        )
+                                      ],
+                                    ));
+                          },
+                          child: Icon(
+                            Icons.settings_backup_restore,
+                            size: 30,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
                     ),
                   ],
                 ),

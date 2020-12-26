@@ -17,6 +17,38 @@ class Home extends StatelessWidget {
     Size size = MediaQuery.of(context).size;
     double width = size.width;
     double height = size.height;
+
+    String _calculateNoOfAllChaptersTaken(List<ChaptersTaken> chaptersTaken) {
+      int total = 0;
+      for (var i = 0; i < chaptersTaken.length; i++) {
+        total = total + chaptersTaken[i].noOfChaptersTaken;
+      }
+      switch (total) {
+        case 0:
+          return '$total من الأجزاء';
+          break;
+        case 1:
+          return 'جزء واحد';
+          break;
+        case 2:
+          return 'جزئين';
+          break;
+        case 3:
+        case 4:
+        case 5:
+        case 6:
+        case 7:
+        case 8:
+        case 9:
+        case 10:
+          return '$total أجزاء';
+          break;
+
+        default:
+          return '$total  جزء';
+      }
+    }
+
     return MultiProvider(
         providers: [
           StreamProvider<List<Session>>.value(
@@ -27,49 +59,81 @@ class Home extends StatelessWidget {
                 .chapterTaken,
           )
         ],
-        child: Scaffold(
-          key: _key,
-          body: Container(
-              color: Color(0xff1d2c26),
-              child: Column(children: [
-                Padding(
-                  padding: EdgeInsets.only(right: width * 0.03),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      Container(
-                        padding: EdgeInsets.only(bottom: height * 0.23),
-                        child: InkWell(
-                          onTap: () {
-                            _key.currentState.openDrawer();
-                          },
-                          child: Icon(
-                            Icons.menu,
-                            size: 30,
-                            color: Colors.white,
-                          ),
+        child: StreamBuilder<List<ChaptersTaken>>(
+            stream: DatabaseService(uid: Provider.of<User>(context).uid)
+                .chapterTaken,
+            builder: (context, snapshot) {
+              return Scaffold(
+                key: _key,
+                body: Container(
+                    color: Color(0xff1d2c26),
+                    child: Column(children: [
+                      Padding(
+                        padding: EdgeInsets.only(right: width * 0.03),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            Container(
+                              padding: EdgeInsets.only(bottom: height * 0.23),
+                              child: InkWell(
+                                onTap: () {
+                                  _key.currentState.openDrawer();
+                                },
+                                child: Icon(
+                                  Icons.menu,
+                                  size: 30,
+                                  color: Colors.white,
+                                ),
+                              ),
+                            ),
+                            Padding(
+                              padding: EdgeInsets.only(right: width * 0.12),
+                              child: logo(width, height),
+                            ),
+                            Padding(
+                              padding: EdgeInsets.fromLTRB(
+                                  0.0, height * 0.30, width * 0.04, 0.0),
+                              child: Container(
+                                child: Column(
+                                  children: [
+                                    Text(
+                                      'عليك:',
+                                      style: TextStyle(
+                                          color: Colors.white,
+                                          fontFamily: 'Amiri',
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 18),
+                                    ),
+                                    Text(
+                                      _calculateNoOfAllChaptersTaken(
+                                          snapshot.data),
+                                      style: TextStyle(
+                                          color: Colors.white,
+                                          fontFamily: 'Amiri'),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            )
+                          ],
                         ),
                       ),
-                      Padding(
-                        padding: EdgeInsets.only(right: width * 0.12),
-                        child: logo(width, height),
-                      ),
-                    ],
-                  ),
+                      Container(
+                          child: SessionList(),
+                          height: height - height * 0.4,
+                          padding: EdgeInsets.symmetric(
+                              vertical: height * 0.02,
+                              horizontal: width * 0.02),
+                          decoration: BoxDecoration(
+                              border: Border.all(color: Colors.white),
+                              color: Colors.white,
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(30)))),
+                    ])),
+                drawer: MainDrawer(
+                  userUid: Provider.of<User>(context).uid,
                 ),
-                Container(
-                    child: SessionList(),
-                    height: height - height * 0.4,
-                    padding: EdgeInsets.symmetric(
-                        vertical: height * 0.02, horizontal: width * 0.02),
-                    decoration: BoxDecoration(
-                        border: Border.all(color: Colors.white),
-                        color: Colors.white,
-                        borderRadius: BorderRadius.all(Radius.circular(30)))),
-              ])),
-          drawer: MainDrawer(
-            userUid: Provider.of<User>(context).uid,
-          ),
-        ));
+              );
+            }));
   }
 }

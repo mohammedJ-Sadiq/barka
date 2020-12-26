@@ -70,6 +70,12 @@ class _ChapterTileState extends State<ChapterTile> {
                           .updateChapterAssignmentChapterStatus(widget.chapter);
                       await DatabaseService(name: widget.sessionName)
                           .updateNoOfChaptersFinished();
+                      await DatabaseService(
+                              name: widget.sessionName,
+                              uid:
+                                  Provider.of<User>(context, listen: false).uid)
+                          .updateNoOfChaptersTakenForAUserWhenMarkedFinished(
+                              false);
                     }
                   },
                 ),
@@ -111,6 +117,12 @@ class _ChapterTileState extends State<ChapterTile> {
                           .updateChapterAssignmentChapterStatus(widget.chapter);
                       await DatabaseService(name: widget.sessionName)
                           .updateNoOfChaptersFinished();
+                      await DatabaseService(
+                              name: widget.sessionName,
+                              uid:
+                                  Provider.of<User>(context, listen: false).uid)
+                          .updateNoOfChaptersTakenForAUserWhenMarkedFinished(
+                              true);
                     }
                   },
                 ),
