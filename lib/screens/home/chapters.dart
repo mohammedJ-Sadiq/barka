@@ -1,4 +1,5 @@
 import 'package:barka/models/chapter_assignment.dart';
+import 'package:barka/models/user.dart';
 import 'package:barka/screens/home/chapter_list.dart';
 import 'package:barka/services/database.dart';
 import 'package:barka/shared/logo.dart';
@@ -44,6 +45,10 @@ class Chapters extends StatelessWidget {
                       padding: EdgeInsets.only(right: width * 0.12),
                       child: logo(width, height),
                     ),
+                    // if (DatabaseService(
+                    //         name: name,
+                    //         uid: Provider.of<User>(context, listen: false).uid)
+                    //     .checkAuthorityOfUser())
                     Padding(
                       padding: EdgeInsets.only(right: width * 0.10),
                       child: Container(

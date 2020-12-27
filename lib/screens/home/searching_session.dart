@@ -46,11 +46,29 @@ class _SearchingSessionState extends State<SearchingSession> {
 
     return Scaffold(
       resizeToAvoidBottomInset: false,
-      body: SingleChildScrollView(
-        child: Form(
-          key: _formKey,
+      body: Form(
+        key: _formKey,
+        child: Padding(
+          padding: EdgeInsets.fromLTRB(
+              width * 0.04, height * 0.02, width * 0.04, 0.0),
           child: Column(
             children: [
+              Container(
+                padding: EdgeInsets.only(left: width * 0.55),
+                child: InkWell(
+                  onTap: () {
+                    Navigator.pop(context);
+                  },
+                  child: Icon(
+                    Icons.close,
+                    size: 30,
+                    color: Colors.grey,
+                  ),
+                ),
+              ),
+              SizedBox(
+                height: height * 0.05,
+              ),
               TextFormField(
                 validator: SessionNameValidator.validate,
                 decoration:
@@ -58,7 +76,7 @@ class _SearchingSessionState extends State<SearchingSession> {
                 onChanged: (val) => setState(() => _currentName = val),
               ),
               SizedBox(
-                height: height * 0.28,
+                height: height * 0.05,
               ),
               GestureDetector(
                 child: Container(
@@ -104,7 +122,7 @@ class _SearchingSessionState extends State<SearchingSession> {
                 },
               ),
               SizedBox(
-                height: height * 0.02,
+                height: height * 0.03,
               ),
               Text(
                 _error,

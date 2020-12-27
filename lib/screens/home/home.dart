@@ -19,34 +19,40 @@ class Home extends StatelessWidget {
     double height = size.height;
 
     String _calculateNoOfAllChaptersTaken(List<ChaptersTaken> chaptersTaken) {
-      int total = 0;
-      for (var i = 0; i < chaptersTaken.length; i++) {
-        total = total + chaptersTaken[i].noOfChaptersTaken;
-      }
-      switch (total) {
-        case 0:
-          return '$total من الأجزاء';
-          break;
-        case 1:
-          return 'جزء واحد';
-          break;
-        case 2:
-          return 'جزئين';
-          break;
-        case 3:
-        case 4:
-        case 5:
-        case 6:
-        case 7:
-        case 8:
-        case 9:
-        case 10:
-          return '$total أجزاء';
-          break;
+      try {
+        int total = 0;
+        print(chaptersTaken.length);
+        for (var i = 0; i < chaptersTaken.length; i++) {
+          total = total + chaptersTaken[i].noOfChaptersTaken;
+        }
+        switch (total) {
+          case 0:
+            return '$total من الأجزاء';
+            break;
+          case 1:
+            return 'جزء واحد';
+            break;
+          case 2:
+            return 'جزئين';
+            break;
+          case 3:
+          case 4:
+          case 5:
+          case 6:
+          case 7:
+          case 8:
+          case 9:
+          case 10:
+            return '$total أجزاء';
+            break;
 
-        default:
-          return '$total  جزء';
+          default:
+            return '$total  جزء';
+        }
+      } catch (e) {
+        print(e.toString());
       }
+      return '';
     }
 
     return MultiProvider(
@@ -61,9 +67,11 @@ class Home extends StatelessWidget {
         ],
         child: StreamBuilder<List<ChaptersTaken>>(
             stream: DatabaseService(uid: Provider.of<User>(context).uid)
-                .chapterTaken,
+                    .chapterTaken ??
+                [],
             builder: (context, snapshot) {
               return Scaffold(
+                resizeToAvoidBottomInset: false,
                 key: _key,
                 body: Container(
                     color: Color(0xff1d2c26),

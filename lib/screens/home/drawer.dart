@@ -33,23 +33,35 @@ class _MainDrawerState extends State<MainDrawer> {
     double width = size.width;
     double height = size.height;
     void _showCreatingNewSessionModal() {
-      showModalBottomSheet(
+      showDialog(
           context: context,
           builder: (context) {
-            return Container(
-              padding: EdgeInsets.symmetric(vertical: 20, horizontal: 60),
-              child: AddingSession(),
+            return Padding(
+              padding: EdgeInsets.fromLTRB(
+                  width * 0.15, height * 0.06, width * 0.15, height * 0.5),
+              child: Container(
+                decoration: BoxDecoration(
+                  border: Border.all(color: Colors.blueGrey[900]),
+                ),
+                child: AddingSession(),
+              ),
             );
           });
     }
 
     void _showSearchingForSessionModal() {
-      showModalBottomSheet(
+      showDialog(
           context: context,
           builder: (context) {
-            return Container(
-              padding: EdgeInsets.symmetric(vertical: 20, horizontal: 60),
-              child: SearchingSession(),
+            return Padding(
+              padding: EdgeInsets.fromLTRB(
+                  width * 0.15, height * 0.06, width * 0.15, height * 0.5),
+              child: Container(
+                decoration: BoxDecoration(
+                  border: Border.all(color: Colors.green[800]),
+                ),
+                child: SearchingSession(),
+              ),
             );
           });
     }

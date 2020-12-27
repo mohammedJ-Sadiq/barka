@@ -46,22 +46,22 @@ const textInputDecorationSignInAndSignIn = InputDecoration(
         ),
         borderSide: BorderSide(color: Color(0xff1e2128), width: 2)));
 
-class MyShapeBorder extends ContinuousRectangleBorder {
-  const MyShapeBorder(this.curveHeight);
-  final double curveHeight;
+// class MyShapeBorder extends ContinuousRectangleBorder {
+//   const MyShapeBorder(this.curveHeight);
+//   final double curveHeight;
 
-  @override
-  Path getOuterPath(Rect rect, {TextDirection textDirection}) => Path()
-    ..lineTo(0, rect.size.height + 60)
-    ..quadraticBezierTo(
-      0.0,
-      rect.size.height,
-      60,
-      rect.size.height,
-    )
-    ..lineTo(rect.size.width - 60, rect.size.height)
-    ..quadraticBezierTo(rect.size.width, rect.size.height, rect.size.width,
-        rect.size.height + 60)
-    ..lineTo(rect.size.width, 0)
-    ..close();
-}
+//   @override
+//   Path getOuterPath(Rect rect, {TextDirection textDirection}) => Path()
+//     ..lineTo(0, rect.size.height + 60)
+//     ..quadraticBezierTo(
+//       0.0,
+//       rect.size.height,
+//       60,
+//       rect.size.height,
+//     )
+//     ..lineTo(rect.size.width - 60, rect.size.height)
+//     ..quadraticBezierTo(rect.size.width, rect.size.height, rect.size.width,
+//         rect.size.height + 60)
+//     ..lineTo(rect.size.width, 0)
+//     ..close();
+// }

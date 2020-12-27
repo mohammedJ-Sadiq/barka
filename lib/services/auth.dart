@@ -26,7 +26,7 @@ class AuthService {
     } catch (e) {
       print(e.toString());
 
-      return null;
+      return e.message;
     }
   }
 
@@ -42,7 +42,7 @@ class AuthService {
       return _userFromFirebaseUser(user);
     } catch (e) {
       print(e.toString());
-      return null;
+      return e.message;
     }
   }
 
@@ -62,7 +62,7 @@ class AuthService {
 class EmailValidator {
   static String validate(String value) {
     if (value.isEmpty) {
-      return "Email cannot be empty ";
+      return "يجب كتابة البريد الألكتروني";
     }
     return null;
   }
@@ -71,7 +71,7 @@ class EmailValidator {
 class PasswordValidator {
   static String validate(String value) {
     if (value.isEmpty) {
-      return "password cannot be empty";
+      return "يجب كتابة كلمة المرور";
     }
     return null;
   }
@@ -80,13 +80,13 @@ class PasswordValidator {
 class NameValidator {
   static String validate(String value) {
     if (value.isEmpty) {
-      return "name cannot be empty ";
+      return "يجب كتابة الأسم";
     }
     if (value.length < 2) {
-      return 'name must be at least 2 characters long';
+      return 'الأسم لابد أن يكون أكثر من حرفين';
     }
     if (value.length > 50) {
-      return 'name must be less than 50 characters long';
+      return 'الأسم يجب أن يكون أقل من 50 حرف/رقم';
     }
     return null;
   }

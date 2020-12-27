@@ -341,6 +341,17 @@ class DatabaseService {
     return jsonEncode(chaptersTakenList);
   }
 
+  // Checking if the user is the creator of the session
+  // Future<bool> checkAuthorityOfUser() async {
+  //   if (uid ==
+  //       await sessionCollection
+  //           .document(name)
+  //           .get()
+  //           .then((value) => value.data["creator"])) {
+  //     return true;
+  //   }
+  // }
+
   Future<List<ChapterAssignment>> _updateChapterStatusFromChapterAssignmentList(
       ChapterAssignment chapter, String sessionName) async {
     String chapters = await sessionCollection
