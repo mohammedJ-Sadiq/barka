@@ -1,3 +1,4 @@
+import 'package:barka/screens/authenticate/forget_Password.dart';
 import 'package:barka/services/auth.dart';
 import 'package:barka/shared/loading.dart';
 import 'package:barka/shared/logo.dart';
@@ -104,6 +105,28 @@ class _SignInState extends State<SignIn> {
                                 password = val;
                               });
                             },
+                          ),
+                          SizedBox(
+                            height: height * 0.002,
+                          ),
+                          Padding(
+                            padding: EdgeInsets.only(left: width * 0.48),
+                            child: GestureDetector(
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => ForgetPassword()),
+                                );
+                              },
+                              child: Text(
+                                'نسيت كلمة المرور؟',
+                                style: TextStyle(
+                                    color: Colors.blue,
+                                    fontFamily: 'Amiri',
+                                    fontSize: 14),
+                              ),
+                            ),
                           ),
                           SizedBox(
                             height: height * 0.092,
