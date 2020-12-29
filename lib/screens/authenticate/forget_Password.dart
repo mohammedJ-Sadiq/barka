@@ -1,7 +1,8 @@
+import 'dart:async';
 import 'package:barka/services/auth.dart';
 import 'package:barka/shared/constants.dart';
-import 'package:barka/shared/loading.dart';
 import 'package:barka/shared/logo.dart';
+import 'package:flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 
@@ -11,7 +12,6 @@ class ForgetPassword extends StatefulWidget {
 }
 
 class _ForgetPasswordState extends State<ForgetPassword> {
-  final _scaffoldKey = GlobalKey<ScaffoldState>();
   final AuthService _auth = AuthService();
   final _formkey = GlobalKey<FormState>();
 
@@ -45,7 +45,6 @@ class _ForgetPasswordState extends State<ForgetPassword> {
     double width = size.width;
     double height = size.height;
     return Scaffold(
-      key: _scaffoldKey,
       resizeToAvoidBottomInset: false,
       body: Container(
         height: height,
@@ -143,16 +142,21 @@ class _ForgetPasswordState extends State<ForgetPassword> {
                                     _translateDatabaseErrorMsgToArabic(result);
                               });
                             } else {
-                              _scaffoldKey.currentState.showSnackBar(
-                                SnackBar(
-                                  duration: Duration(seconds: 5),
-                                  content: Text(
-                                      'تم إرسال رابط إعادة بناء كلمة المرور على $email'),
+                              Flushbar(
+                                message:
+                                    'تم إرسال رابط إعادة تعيين كلمة المرور  $email',
+                                duration: Duration(seconds: 3),
+                                isDismissible: true,
+                                mainButton: FlatButton(
+                                  child: Text('OK'),
+                                  onPressed: () {
+                                    Navigator.pop(context);
+                                  },
                                 ),
-                              );
-
-                              Navigator.of(context).pop();
-                              // Scaffold.of(context).showSnackBar(snackbar);
+                              )..show(context);
+                              Timer(Duration(seconds: 5), () {
+                                Navigator.of(context).pop();
+                              });
                             }
                           }
                         }),

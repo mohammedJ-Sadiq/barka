@@ -1,4 +1,5 @@
-import 'package:barka/models/user.dart';
+import 'package:barka/models/custom_user.dart';
+import 'package:barka/models/custom_user.dart';
 import 'package:barka/services/auth.dart';
 import 'package:barka/services/database.dart';
 import 'package:barka/shared/constants.dart';
@@ -6,7 +7,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-final sessionRef = Firestore.instance.collection('sessions');
+final sessionRef = FirebaseFirestore.instance.collection('sessions');
 
 class AddingSession extends StatefulWidget {
   @override
@@ -24,7 +25,7 @@ class _AddingSessionState extends State<AddingSession> {
     Size size = MediaQuery.of(context).size;
     double width = size.width;
     double height = size.height;
-    final user = Provider.of<User>(context);
+    final user = Provider.of<CustomUser>(context);
 
     return Scaffold(
       resizeToAvoidBottomInset: false,

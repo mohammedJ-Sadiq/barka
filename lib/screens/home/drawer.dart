@@ -1,4 +1,5 @@
-import 'package:barka/models/user.dart';
+import 'package:barka/models/custom_user.dart';
+import 'package:barka/models/custom_user.dart';
 import 'package:barka/screens/home/adding_session.dart';
 import 'package:barka/screens/home/searching_session.dart';
 import 'package:barka/services/auth.dart';
@@ -20,7 +21,7 @@ class _MainDrawerState extends State<MainDrawer> {
   @override
   void initState() {
     super.initState();
-    DatabaseService(uid: Provider.of<User>(context, listen: false).uid)
+    DatabaseService(uid: Provider.of<CustomUser>(context, listen: false).uid)
         .getUsernameFromUid()
         .then((value) => setState(() {
               _username = value;
