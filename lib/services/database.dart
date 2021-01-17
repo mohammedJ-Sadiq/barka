@@ -13,10 +13,10 @@ class DatabaseService {
   ];
 
   final CollectionReference readerCollection =
-      Firestore.instance.collection('readers');
+      FirebaseFirestore.instance.collection('readers');
 
   final CollectionReference sessionCollection =
-      Firestore.instance.collection('sessions');
+      FirebaseFirestore.instance.collection('sessions');
 
   List<ChapterAssignment> chapterAssignmentObj = [
     ChapterAssignment(uid: '', chapterNo: '', name: '')
@@ -41,14 +41,14 @@ class DatabaseService {
         uid: '', chapterNo: '1', name: '', chapterStatus: false);
     for (var i = 2; i < 31; i++) {
       chapterAssignmentObj.add(ChapterAssignment(
-          uid: '', chapterNo: '${i}', name: '', chapterStatus: false));
+          uid: '', chapterNo: '$i', name: '', chapterStatus: false));
     }
     return chapterAssignmentObj;
   }
 
   // to create the user data once he register
   Future createUserData(String name) async {
-    return await readerCollection.document(uid).setData({
+    return await readerCollection.doc(uid).set({
       'uid': uid,
       'name': name,
       'chaptersTaken': jsonEncode(chaptersTaken),
@@ -60,10 +60,10 @@ class DatabaseService {
     String name,
     String description,
   ) async {
-    DocumentSnapshot doc = await sessionCollection.document(name).get();
+    DocumentSnapshot doc = await sessionCollection.doc(name).get();
     if (!doc.exists) {
       String availableChapters = jsonEncode(populateChapterList());
-      return await sessionCollection.document(name).setData({
+      return await sessionCollection.doc(name).set({
         'creator': uid,
         'name': name,
         'description': description,
@@ -86,9 +86,9 @@ class DatabaseService {
       List<String> readers,
       int noOfChaptersTaken,
       int noOfChaptersFinished) async {
-    DocumentSnapshot doc = await sessionCollection.document(name).get();
+    DocumentSnapshot doc = await sessionCollection.doc(name).get();
     if (doc.exists) {
-      return await sessionCollection.document(name).setData({
+      return await sessionCollection.doc(name).set({
         'creator': creatorId,
         'name': name,
         'description': description,
@@ -104,9 +104,9 @@ class DatabaseService {
 
   Future<List<ChaptersTaken>> getChaptersTakenFromUid() async {
     String chaptersTaken = await readerCollection
-        .document(uid)
+        .doc(uid)
         .get()
-        .then((value) => value.data['chaptersTaken']);
+        .then((value) => value.data()['chaptersTaken']);
     List decodedChaptersTaken = jsonDecode(chaptersTaken);
     List<ChaptersTaken> chaptersTakenList = decodedChaptersTaken
         .map((json) => ChaptersTaken.fromJson(json))
@@ -118,9 +118,9 @@ class DatabaseService {
   // to update the number of chpaters taken in a session
   Future updateNoOfChaptersTaken() async {
     String chapters = await sessionCollection
-        .document(name)
+        .doc(name)
         .get()
-        .then((value) => value.data['available_chapters']);
+        .then((value) => value.data()['available_chapters']);
     List decodedChapters = jsonDecode(chapters);
     List<ChapterAssignment> chapterAssignmentList = decodedChapters
         .map((json) => ChapterAssignment.fromJson(json))
@@ -128,8 +128,8 @@ class DatabaseService {
     int noOfChaptersTaken =
         _getNoOfChaptersTakenFromChapterAssignment(chapterAssignmentList);
     return await sessionCollection
-        .document(name)
-        .updateData({'no_of_chapters_taken': noOfChaptersTaken});
+        .doc(name)
+        .update({'no_of_chapters_taken': noOfChaptersTaken});
   }
 
   int _getNoOfChaptersTakenFromChapterAssignment(
@@ -146,9 +146,9 @@ class DatabaseService {
   // to update the number of chapter taken by a user in all sessions
   Future updateNoOfChaptersTakenForAUser(bool increase) async {
     String chaptersTaken = await readerCollection
-        .document(uid)
+        .doc(uid)
         .get()
-        .then((value) => value.data['chaptersTaken']);
+        .then((value) => value.data()['chaptersTaken']);
     List decodedChaptersTaken = jsonDecode(chaptersTaken);
     List<ChaptersTaken> chaptersTakenList = decodedChaptersTaken
         .map((json) => ChaptersTaken.fromJson(json))
@@ -157,8 +157,8 @@ class DatabaseService {
         await _updateChaptersTakenByUser(chaptersTakenList, increase);
 
     return await readerCollection
-        .document(uid)
-        .updateData({'chaptersTaken': jsonEncode(modifiedChaptersTaken)});
+        .doc(uid)
+        .update({'chaptersTaken': jsonEncode(modifiedChaptersTaken)});
   }
 
   _updateChaptersTakenByUser(List<ChaptersTaken> chaptersTaken, bool increase) {
@@ -186,9 +186,9 @@ class DatabaseService {
   Future updateNoOfChaptersTakenForAUserWhenMarkedFinished(
       bool increase) async {
     String chaptersTaken = await readerCollection
-        .document(uid)
+        .doc(uid)
         .get()
-        .then((value) => value.data['chaptersTaken']);
+        .then((value) => value.data()['chaptersTaken']);
     List decodedChaptersTaken = jsonDecode(chaptersTaken);
     List<ChaptersTaken> chaptersTakenList = decodedChaptersTaken
         .map((json) => ChaptersTaken.fromJson(json))
@@ -198,8 +198,8 @@ class DatabaseService {
             chaptersTakenList, increase);
 
     return await readerCollection
-        .document(uid)
-        .updateData({'chaptersTaken': jsonEncode(modifiedChaptersTaken)});
+        .doc(uid)
+        .update({'chaptersTaken': jsonEncode(modifiedChaptersTaken)});
   }
 
   _updateChaptersTakenByUserWhenMarkedFinished(
@@ -225,9 +225,9 @@ class DatabaseService {
 
   Future populateChaptersTakenWhenJoiningSession() async {
     String chaptersTaken = await readerCollection
-        .document(uid)
+        .doc(uid)
         .get()
-        .then((value) => value.data['chaptersTaken']);
+        .then((value) => value.data()['chaptersTaken']);
     List decodedChaptersTaken = jsonDecode(chaptersTaken);
     List<ChaptersTaken> chaptersTakenList = decodedChaptersTaken
         .map((json) => ChaptersTaken.fromJson(json))
@@ -243,23 +243,23 @@ class DatabaseService {
       chaptersTakenList[0] =
           ChaptersTaken(sessionName: name, noOfChaptersTaken: 0);
       return await readerCollection
-          .document(uid)
-          .updateData({'chaptersTaken': jsonEncode(chaptersTakenList)});
+          .doc(uid)
+          .update({'chaptersTaken': jsonEncode(chaptersTakenList)});
     } else {
       chaptersTakenList
           .add(ChaptersTaken(sessionName: name, noOfChaptersTaken: 0));
       return await readerCollection
-          .document(uid)
-          .updateData({'chaptersTaken': jsonEncode(chaptersTakenList)});
+          .doc(uid)
+          .update({'chaptersTaken': jsonEncode(chaptersTakenList)});
     }
   }
 
   // to update the number of chpaters finished in a session
   Future updateNoOfChaptersFinished() async {
     String chapters = await sessionCollection
-        .document(name)
+        .doc(name)
         .get()
-        .then((value) => value.data['available_chapters']);
+        .then((value) => value.data()['available_chapters']);
     List decodedChapters = jsonDecode(chapters);
     List<ChapterAssignment> chapterAssignmentList = decodedChapters
         .map((json) => ChapterAssignment.fromJson(json))
@@ -267,8 +267,8 @@ class DatabaseService {
     int noOfChaptersFinished =
         _getNoOfChaptersFinishedFromChapterAssignment(chapterAssignmentList);
     return await sessionCollection
-        .document(name)
-        .updateData({'no_of_chapters_finished': noOfChaptersFinished});
+        .doc(name)
+        .update({'no_of_chapters_finished': noOfChaptersFinished});
   }
 
   int _getNoOfChaptersFinishedFromChapterAssignment(
@@ -286,8 +286,8 @@ class DatabaseService {
   Future updateChapterAssignmentUsername(
       List<ChapterAssignment> chapters) async {
     return await sessionCollection
-        .document(name)
-        .updateData({'available_chapters': jsonEncode(chapters)});
+        .doc(name)
+        .update({'available_chapters': jsonEncode(chapters)});
   }
 
   // to update the status of a chpater (finished or not)
@@ -295,14 +295,14 @@ class DatabaseService {
     List<ChapterAssignment> chapters =
         await _updateChapterStatusFromChapterAssignmentList(chapter, name);
     return await sessionCollection
-        .document(name)
-        .updateData({'available_chapters': jsonEncode(chapters)});
+        .doc(name)
+        .update({'available_chapters': jsonEncode(chapters)});
   }
 
   // to reset a specific session
   Future resetChapterAssignmentPage() async {
     await resetChaptersTakenForAllUser();
-    return await sessionCollection.document(name).updateData({
+    return await sessionCollection.doc(name).update({
       'available_chapters': jsonEncode(populateChapterList()),
       'no_of_chapters_finished': 0,
       'no_of_chapters_taken': 0,
@@ -312,12 +312,12 @@ class DatabaseService {
   // to reset all chapters taken of all users in a session
   Future<void> resetChaptersTakenForAllUser() async {
     List readers = await sessionCollection
-        .document(name)
+        .doc(name)
         .get()
-        .then((value) => value.data['readers']);
+        .then((value) => value.data()['readers']);
 
     for (var i = 0; i < readers.length; i++) {
-      await readerCollection.document(readers[i]).updateData({
+      await readerCollection.doc(readers[i]).update({
         'chaptersTaken':
             await _resetSessionFromReadersCollection(readers[i], name)
       });
@@ -327,9 +327,9 @@ class DatabaseService {
   Future<String> _resetSessionFromReadersCollection(
       String readerUid, String sessionName) async {
     String chaptersTaken = await readerCollection
-        .document(readerUid)
+        .doc(readerUid)
         .get()
-        .then((value) => value.data['chaptersTaken']);
+        .then((value) => value.data()['chaptersTaken']);
     List decodedChapters = jsonDecode(chaptersTaken);
     List<ChaptersTaken> chaptersTakenList =
         decodedChapters.map((json) => ChaptersTaken.fromJson(json)).toList();
@@ -355,9 +355,9 @@ class DatabaseService {
   Future<List<ChapterAssignment>> _updateChapterStatusFromChapterAssignmentList(
       ChapterAssignment chapter, String sessionName) async {
     String chapters = await sessionCollection
-        .document(sessionName)
+        .doc(sessionName)
         .get()
-        .then((value) => value.data['available_chapters']);
+        .then((value) => value.data()['available_chapters']);
     List decodedChapters = jsonDecode(chapters);
     List<ChapterAssignment> chapterAssignmentList = decodedChapters
         .map((json) => ChapterAssignment.fromJson(json))
@@ -369,17 +369,17 @@ class DatabaseService {
   }
 
   List<Session> _sessionsListFromSnapshot(QuerySnapshot snapshot) {
-    return snapshot.documents.map((doc) {
+    return snapshot.docs.map((doc) {
       return Session(
-          description: doc.data['description'] ?? '',
-          name: doc.data['name'] ?? '',
-          noOfChaptersTaken: doc.data['no_of_chapters_taken'] ?? 0,
-          noOfChaptersFinished: doc.data['no_of_chapters_finished'] ?? 0);
+          description: doc.data()['description'] ?? '',
+          name: doc.data()['name'] ?? '',
+          noOfChaptersTaken: doc.data()['no_of_chapters_taken'] ?? 0,
+          noOfChaptersFinished: doc.data()['no_of_chapters_finished'] ?? 0);
     }).toList();
   }
 
   List<ChapterAssignment> _chaptersListFromSnapshot(DocumentSnapshot snapshot) {
-    String availableChapters = snapshot.data['available_chapters'];
+    String availableChapters = snapshot.data()['available_chapters'];
     List chapters = jsonDecode(availableChapters);
     List<ChapterAssignment> chapterAssignmentList =
         chapters.map((json) => ChapterAssignment.fromJson(json)).toList();
@@ -388,7 +388,7 @@ class DatabaseService {
   }
 
   List<ChaptersTaken> _chaptersTakenFromSnapshot(DocumentSnapshot snapshot) {
-    String chaptersTaken = snapshot.data['chaptersTaken'];
+    String chaptersTaken = snapshot.data()['chaptersTaken'];
     List decodedChaptersTaken = jsonDecode(chaptersTaken);
     List<ChaptersTaken> chaptersTakenList = decodedChaptersTaken
         .map((json) => ChaptersTaken.fromJson(json))
@@ -399,9 +399,9 @@ class DatabaseService {
 
   Future<String> getUsernameFromUid() async {
     return await readerCollection
-        .document(uid)
+        .doc(uid)
         .get()
-        .then((value) => value.data['name']);
+        .then((value) => value.data()['name']);
   }
 
   Stream<List<Session>> get session {
@@ -413,14 +413,14 @@ class DatabaseService {
 
   Stream<List<ChapterAssignment>> get chapter {
     return sessionCollection
-        .document(name)
+        .doc(name)
         .snapshots()
         .map(_chaptersListFromSnapshot);
   }
 
   Stream<List<ChaptersTaken>> get chapterTaken {
     return readerCollection
-        .document(uid)
+        .doc(uid)
         .snapshots()
         .map(_chaptersTakenFromSnapshot);
   }

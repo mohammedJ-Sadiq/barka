@@ -1,6 +1,10 @@
+import 'dart:async';
+
+import 'package:barka/screens/authenticate/sign_up_with_phone.dart';
 import 'package:barka/shared/constants.dart';
 import 'package:barka/shared/loading.dart';
 import 'package:barka/shared/logo.dart';
+import 'package:flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
 import 'package:barka/services/auth.dart';
 
@@ -116,6 +120,28 @@ class _RegisterState extends State<Register> {
                             },
                           ),
                           SizedBox(
+                            height: height * 0.002,
+                          ),
+                          Padding(
+                            padding: EdgeInsets.only(left: width * 0.48),
+                            child: GestureDetector(
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => SignupWithPhone()),
+                                );
+                              },
+                              child: Text(
+                                'تسجيل جديد بالجوال',
+                                style: TextStyle(
+                                    color: Colors.blue,
+                                    fontFamily: 'Amiri',
+                                    fontSize: 14),
+                              ),
+                            ),
+                          ),
+                          SizedBox(
                             height: height * 0.04,
                           ),
                           GestureDetector(
@@ -160,6 +186,22 @@ class _RegisterState extends State<Register> {
                                           _translateDatabaseErrorMsgToArabic(
                                               result);
                                       loading = false;
+                                    });
+                                  } else {
+                                    Flushbar(
+                                      message:
+                                          'تم إرسال رابط التحقق من البريد الألكتروني على  $email',
+                                      duration: Duration(seconds: 3),
+                                      isDismissible: true,
+                                      mainButton: FlatButton(
+                                        child: Text('OK'),
+                                        onPressed: () {
+                                          Navigator.pop(context);
+                                        },
+                                      ),
+                                    )..show(context);
+                                    Timer(Duration(seconds: 5), () {
+                                      widget.toggleView();
                                     });
                                   }
                                 }

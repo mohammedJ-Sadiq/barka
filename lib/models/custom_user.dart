@@ -1,9 +1,10 @@
 import 'package:barka/models/chaptersTaken.dart';
 
-class User {
+class CustomUser {
   final String uid;
   final String name;
+  bool isEmailVerified;
   final List<ChaptersTaken> chaptersTaken;
 
-  User({this.uid, this.name, this.chaptersTaken});
+  CustomUser({this.uid, this.name, this.chaptersTaken, this.isEmailVerified});
 }

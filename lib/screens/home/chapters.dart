@@ -1,5 +1,4 @@
 import 'package:barka/models/chapter_assignment.dart';
-import 'package:barka/models/user.dart';
 import 'package:barka/screens/home/chapter_list.dart';
 import 'package:barka/services/database.dart';
 import 'package:barka/shared/logo.dart';

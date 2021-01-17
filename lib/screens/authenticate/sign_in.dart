@@ -4,10 +4,12 @@ import 'package:barka/shared/loading.dart';
 import 'package:barka/shared/logo.dart';
 import 'package:flutter/material.dart';
 import 'package:barka/shared/constants.dart';
+import 'package:flushbar/flushbar.dart';
 
 class SignIn extends StatefulWidget {
   final Function toggleView;
-  SignIn({this.toggleView});
+  final String snackBarMessage;
+  SignIn({this.toggleView, this.snackBarMessage});
 
   @override
   _SignInState createState() => _SignInState();
@@ -15,6 +17,7 @@ class SignIn extends StatefulWidget {
 
 class _SignInState extends State<SignIn> {
   final AuthService _auth = AuthService();
+  final _scaffoldKey = GlobalKey<ScaffoldState>();
   final _formkey = GlobalKey<FormState>();
   bool loading = false;
 
@@ -38,6 +41,9 @@ class _SignInState extends State<SignIn> {
     if (databaseErrorMsg == errorMsg3) {
       return 'هناك خطأ في البريد الألكتروني أو كلمة المرور, الرجاء التأكد من البيانات المدخلة.';
     }
+    if (databaseErrorMsg == 'errorMsg4') {
+      return 'يجب عليك التحقق من البريد الألكتروني. ';
+    }
 
     return '';
   }
@@ -50,6 +56,7 @@ class _SignInState extends State<SignIn> {
     return loading
         ? Loading()
         : Scaffold(
+            key: _scaffoldKey,
             resizeToAvoidBottomInset: false,
             body: Container(
               height: height,
