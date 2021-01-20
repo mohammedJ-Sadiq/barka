@@ -1,7 +1,6 @@
 import 'package:barka/models/chaptersTaken.dart';
-import 'package:barka/models/custom_user.dart';
 import 'package:barka/models/session.dart';
-import 'package:barka/models/custom_user.dart';
+import 'package:barka/models/user.dart';
 import 'package:barka/screens/home/drawer.dart';
 import 'package:barka/screens/home/session_list.dart';
 import 'package:barka/services/database.dart';
@@ -59,16 +58,15 @@ class Home extends StatelessWidget {
     return MultiProvider(
         providers: [
           StreamProvider<List<Session>>.value(
-            value: DatabaseService(uid: Provider.of<CustomUser>(context).uid)
-                .session,
+            value: DatabaseService(uid: Provider.of<User>(context).uid).session,
           ),
           StreamProvider<List<ChaptersTaken>>.value(
-            value: DatabaseService(uid: Provider.of<CustomUser>(context).uid)
+            value: DatabaseService(uid: Provider.of<User>(context).uid)
                 .chapterTaken,
           )
         ],
         child: StreamBuilder<List<ChaptersTaken>>(
-            stream: DatabaseService(uid: Provider.of<CustomUser>(context).uid)
+            stream: DatabaseService(uid: Provider.of<User>(context).uid)
                     .chapterTaken ??
                 [],
             builder: (context, snapshot) {
@@ -141,7 +139,7 @@ class Home extends StatelessWidget {
                                   BorderRadius.all(Radius.circular(30)))),
                     ])),
                 drawer: MainDrawer(
-                  userUid: Provider.of<CustomUser>(context).uid,
+                  userUid: Provider.of<User>(context).uid,
                 ),
               );
             }));

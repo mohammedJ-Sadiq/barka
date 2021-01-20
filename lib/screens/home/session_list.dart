@@ -1,7 +1,8 @@
 import 'package:barka/models/chaptersTaken.dart';
 import 'package:barka/models/session.dart';
-
+import 'package:barka/models/user.dart';
 import 'package:barka/screens/home/chapters.dart';
+import 'package:barka/services/database.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:barka/screens/home/session_tile.dart';

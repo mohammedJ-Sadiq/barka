@@ -1,5 +1,5 @@
 import 'package:barka/models/chapter_assignment.dart';
-import 'package:barka/models/custom_user.dart';
+import 'package:barka/models/user.dart';
 import 'package:barka/services/database.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -58,7 +58,7 @@ class _ChapterTileState extends State<ChapterTile> {
                   ),
                   onPressed: () async {
                     if (widget.chapter.uid ==
-                        Provider.of<CustomUser>(context, listen: false).uid) {
+                        Provider.of<User>(context, listen: false).uid) {
                       print(widget.noOfChaptersFinished);
                       setState(() {
                         widget.chapter.chapterStatus =
@@ -72,9 +72,8 @@ class _ChapterTileState extends State<ChapterTile> {
                           .updateNoOfChaptersFinished();
                       await DatabaseService(
                               name: widget.sessionName,
-                              uid: Provider.of<CustomUser>(context,
-                                      listen: false)
-                                  .uid)
+                              uid:
+                                  Provider.of<User>(context, listen: false).uid)
                           .updateNoOfChaptersTakenForAUserWhenMarkedFinished(
                               false);
                     }
@@ -108,7 +107,7 @@ class _ChapterTileState extends State<ChapterTile> {
                   ),
                   onPressed: () async {
                     if (widget.chapter.uid ==
-                        Provider.of<CustomUser>(context, listen: false).uid) {
+                        Provider.of<User>(context, listen: false).uid) {
                       setState(() {
                         widget.chapter.chapterStatus =
                             !widget.chapter.chapterStatus;
@@ -120,9 +119,8 @@ class _ChapterTileState extends State<ChapterTile> {
                           .updateNoOfChaptersFinished();
                       await DatabaseService(
                               name: widget.sessionName,
-                              uid: Provider.of<CustomUser>(context,
-                                      listen: false)
-                                  .uid)
+                              uid:
+                                  Provider.of<User>(context, listen: false).uid)
                           .updateNoOfChaptersTakenForAUserWhenMarkedFinished(
                               true);
                     }

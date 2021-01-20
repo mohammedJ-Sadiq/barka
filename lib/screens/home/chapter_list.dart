@@ -1,14 +1,12 @@
 import 'package:barka/models/chapter_assignment.dart';
-import 'package:barka/models/custom_user.dart';
-import 'package:barka/models/custom_user.dart';
+import 'package:barka/models/user.dart';
 import 'package:barka/screens/home/chapter_tile.dart';
 import 'package:barka/services/database.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-CollectionReference readerCollection =
-    FirebaseFirestore.instance.collection('readers');
+CollectionReference readerCollection = Firestore.instance.collection('readers');
 
 class ChapterList extends StatefulWidget {
   final String sessionName;
@@ -27,8 +25,7 @@ class _ChapterListState extends State<ChapterList> {
     final chapters = Provider.of<List<ChapterAssignment>>(context) ?? [];
 
     Future<void> updateName() async {
-      await DatabaseService(
-              uid: Provider.of<CustomUser>(context, listen: false).uid)
+      await DatabaseService(uid: Provider.of<User>(context, listen: false).uid)
           .getUsernameFromUid()
           .then((value) => setState(() {
                 _username = value;
@@ -42,7 +39,7 @@ class _ChapterListState extends State<ChapterList> {
               onTap: () async {
                 String chapterUid = chapters[index].uid;
                 String currentUserUid =
-                    Provider.of<CustomUser>(context, listen: false).uid;
+                    Provider.of<User>(context, listen: false).uid;
                 if (chapterUid == '') {
                   await updateName();
                   setState(() {
