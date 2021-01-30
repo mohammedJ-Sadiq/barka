@@ -1,4 +1,4 @@
-import 'package:barka/models/user.dart';
+import 'package:barka/models/custom_user.dart';
 import 'package:barka/services/auth.dart';
 import 'package:barka/services/database.dart';
 import 'package:barka/shared/constants.dart';
@@ -6,7 +6,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-final sessionRef = Firestore.instance.collection('sessions');
+final sessionRef = FirebaseFirestore.instance.collection('sessions');
 
 class SearchingSession extends StatefulWidget {
   @override
@@ -17,26 +17,26 @@ class _SearchingSessionState extends State<SearchingSession> {
   bool _validate = true;
   String _error = '';
   String _currentName;
-  final _formKey = GlobalKey<FormState>();
+  final _formKey1 = GlobalKey<FormState>();
 
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
     double width = size.width;
     double height = size.height;
-    final user = Provider.of<User>(context);
+    final user = Provider.of<CustomUser>(context);
 
     Future<bool> joiningSession(String name) async {
-      DocumentSnapshot doc = await sessionRef.document(name).get();
+      DocumentSnapshot doc = await sessionRef.doc(name).get();
       if (doc.exists) {
         DatabaseService(uid: user.uid, name: name).joinSession(
-          doc.data['name'],
-          doc.data['description'],
-          doc.data['creator'],
-          doc.data['available_chapters'],
-          List.from(doc.data['readers']),
-          doc.data['no_of_chapters_taken'],
-          doc.data['no_of_chapters_finished'],
+          doc.data()['name'],
+          doc.data()['description'],
+          doc.data()['creator'],
+          doc.data()['available_chapters'],
+          List.from(doc.data()['readers']),
+          doc.data()['no_of_chapters_taken'],
+          doc.data()['no_of_chapters_finished'],
         );
       } else {
         _validate = false;
@@ -47,7 +47,7 @@ class _SearchingSessionState extends State<SearchingSession> {
     return Scaffold(
       resizeToAvoidBottomInset: false,
       body: Form(
-        key: _formKey,
+        key: _formKey1,
         child: Padding(
           padding: EdgeInsets.fromLTRB(
               width * 0.04, height * 0.02, width * 0.04, 0.0),
@@ -106,7 +106,7 @@ class _SearchingSessionState extends State<SearchingSession> {
                   ),
                 ),
                 onTap: () async {
-                  if (_formKey.currentState.validate()) {
+                  if (_formKey1.currentState.validate()) {
                     bool result = await joiningSession(_currentName);
 
                     if (result == false) {

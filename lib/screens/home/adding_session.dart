@@ -1,4 +1,5 @@
-import 'package:barka/models/user.dart';
+import 'package:barka/models/custom_user.dart';
+import 'package:barka/models/custom_user.dart';
 import 'package:barka/services/auth.dart';
 import 'package:barka/services/database.dart';
 import 'package:barka/shared/constants.dart';
@@ -6,7 +7,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-final sessionRef = Firestore.instance.collection('sessions');
+final sessionRef = FirebaseFirestore.instance.collection('sessions');
 
 class AddingSession extends StatefulWidget {
   @override
@@ -14,7 +15,7 @@ class AddingSession extends StatefulWidget {
 }
 
 class _AddingSessionState extends State<AddingSession> {
-  final _formKey = GlobalKey<FormState>();
+  final _formKey0 = GlobalKey<FormState>();
   String _currentName;
   String _currentDescription;
   String _error = '';
@@ -24,12 +25,12 @@ class _AddingSessionState extends State<AddingSession> {
     Size size = MediaQuery.of(context).size;
     double width = size.width;
     double height = size.height;
-    final user = Provider.of<User>(context);
+    final user = Provider.of<CustomUser>(context);
 
     return Scaffold(
       resizeToAvoidBottomInset: false,
       body: Form(
-        key: _formKey,
+        key: _formKey0,
         child: Padding(
           padding: EdgeInsets.fromLTRB(
               width * 0.04, height * 0.02, width * 0.04, 0.0),
@@ -96,7 +97,7 @@ class _AddingSessionState extends State<AddingSession> {
                   ),
                 ),
                 onTap: () async {
-                  if (_formKey.currentState.validate()) {
+                  if (_formKey0.currentState.validate()) {
                     dynamic result = await DatabaseService(uid: user.uid)
                         .createNewSession(_currentName, _currentDescription);
 
