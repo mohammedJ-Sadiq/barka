@@ -5,12 +5,15 @@ import 'package:provider/provider.dart';
 import 'package:barka/models/custom_user.dart';
 import 'package:barka/screens/home/home.dart';
 import 'package:barka/models/custom_phoneUser.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class Wrapper extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final user = Provider.of<CustomUser>(context);
-    if (user == null) {
+    final FirebaseAuth _auth = FirebaseAuth.instance;
+    Provider.of<User>(context);
+    print(_auth.currentUser);
+    if (_auth.currentUser == null) {
       return Authenticate();
     } else {
       return Home();

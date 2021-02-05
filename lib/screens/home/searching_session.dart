@@ -4,7 +4,7 @@ import 'package:barka/services/database.dart';
 import 'package:barka/shared/constants.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 final sessionRef = FirebaseFirestore.instance.collection('sessions');
 
@@ -14,9 +14,11 @@ class SearchingSession extends StatefulWidget {
 }
 
 class _SearchingSessionState extends State<SearchingSession> {
+  final FirebaseAuth _auth = FirebaseAuth.instance;
   bool _validate = true;
   String _error = '';
   String _currentName;
+  int _currentOrderNum;
   final _formKey1 = GlobalKey<FormState>();
 
   @override
@@ -24,20 +26,20 @@ class _SearchingSessionState extends State<SearchingSession> {
     Size size = MediaQuery.of(context).size;
     double width = size.width;
     double height = size.height;
-    final user = Provider.of<CustomUser>(context);
+    final user = _auth.currentUser;
 
     Future<bool> joiningSession(String name) async {
       DocumentSnapshot doc = await sessionRef.doc(name).get();
       if (doc.exists) {
         DatabaseService(uid: user.uid, name: name).joinSession(
-          doc.data()['name'],
-          doc.data()['description'],
-          doc.data()['creator'],
-          doc.data()['available_chapters'],
-          List.from(doc.data()['readers']),
-          doc.data()['no_of_chapters_taken'],
-          doc.data()['no_of_chapters_finished'],
-        );
+            doc.data()['name'],
+            doc.data()['description'],
+            doc.data()['creator'],
+            doc.data()['available_chapters'],
+            List.from(doc.data()['readers']),
+            doc.data()['no_of_chapters_taken'],
+            doc.data()['no_of_chapters_finished'],
+            doc.data()['order']);
       } else {
         _validate = false;
       }

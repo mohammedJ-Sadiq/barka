@@ -6,6 +6,7 @@ import 'package:barka/shared/constants.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 final sessionRef = FirebaseFirestore.instance.collection('sessions');
 
@@ -15,6 +16,7 @@ class AddingSession extends StatefulWidget {
 }
 
 class _AddingSessionState extends State<AddingSession> {
+  final FirebaseAuth _auth = FirebaseAuth.instance;
   final _formKey0 = GlobalKey<FormState>();
   String _currentName;
   String _currentDescription;
@@ -22,10 +24,10 @@ class _AddingSessionState extends State<AddingSession> {
 
   @override
   Widget build(BuildContext context) {
+    final currentUserUid = _auth.currentUser.uid;
     Size size = MediaQuery.of(context).size;
     double width = size.width;
     double height = size.height;
-    final user = Provider.of<CustomUser>(context);
 
     return Scaffold(
       resizeToAvoidBottomInset: false,
@@ -98,7 +100,7 @@ class _AddingSessionState extends State<AddingSession> {
                 ),
                 onTap: () async {
                   if (_formKey0.currentState.validate()) {
-                    dynamic result = await DatabaseService(uid: user.uid)
+                    dynamic result = await DatabaseService(uid: currentUserUid)
                         .createNewSession(_currentName, _currentDescription);
 
                     if (result == 'error') {
@@ -108,7 +110,8 @@ class _AddingSessionState extends State<AddingSession> {
                       print(result);
                     }
                     if (result == null) {
-                      await DatabaseService(uid: user.uid, name: _currentName)
+                      await DatabaseService(
+                              uid: currentUserUid, name: _currentName)
                           .populateChaptersTakenWhenJoiningSession();
                       Navigator.pop(context);
                     }

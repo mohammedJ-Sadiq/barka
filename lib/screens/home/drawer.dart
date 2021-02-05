@@ -6,6 +6,7 @@ import 'package:barka/services/auth.dart';
 import 'package:barka/services/database.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class MainDrawer extends StatefulWidget {
   final String userUid;
@@ -15,13 +16,13 @@ class MainDrawer extends StatefulWidget {
 }
 
 class _MainDrawerState extends State<MainDrawer> {
+  final FirebaseAuth _auth = FirebaseAuth.instance;
   String _username = '';
-  final AuthService _auth = AuthService();
 
   @override
   void initState() {
     super.initState();
-    DatabaseService(uid: Provider.of<CustomUser>(context, listen: false).uid)
+    DatabaseService(uid: _auth.currentUser.uid)
         .getUsernameFromUid()
         .then((value) => setState(() {
               _username = value;
@@ -30,6 +31,7 @@ class _MainDrawerState extends State<MainDrawer> {
 
   @override
   Widget build(BuildContext context) {
+    final currentUserUid = _auth.currentUser.uid;
     Size size = MediaQuery.of(context).size;
     double width = size.width;
     double height = size.height;

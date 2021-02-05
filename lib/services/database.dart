@@ -63,6 +63,22 @@ class DatabaseService {
     DocumentSnapshot doc = await sessionCollection.doc(name).get();
     if (!doc.exists) {
       String availableChapters = jsonEncode(populateChapterList());
+      await sessionCollection.doc('--stat--').get().then((value) => {
+            if (value.exists)
+              {
+                sessionCollection
+                    .doc('--stat--')
+                    .update({'counter': FieldValue.increment(1)})
+              }
+            else
+              {
+                sessionCollection.doc('--stat--').set({'counter': 1})
+              }
+          });
+      int orderNum = await sessionCollection
+          .doc('--stat--')
+          .get()
+          .then((value) => value.data()['counter']);
       return await sessionCollection.doc(name).set({
         'creator': uid,
         'name': name,
@@ -70,7 +86,8 @@ class DatabaseService {
         'available_chapters': availableChapters,
         'readers': setReaderUidReadersList(readers),
         'no_of_chapters_taken': 0,
-        'no_of_chapters_finished': 0
+        'no_of_chapters_finished': 0,
+        'order': orderNum,
       });
     } else {
       return 'error';
@@ -85,7 +102,8 @@ class DatabaseService {
       String availableChapters,
       List<String> readers,
       int noOfChaptersTaken,
-      int noOfChaptersFinished) async {
+      int noOfChaptersFinished,
+      int orderNum) async {
     DocumentSnapshot doc = await sessionCollection.doc(name).get();
     if (doc.exists) {
       return await sessionCollection.doc(name).set({
@@ -96,6 +114,7 @@ class DatabaseService {
         'readers': setReaderUidReadersList(readers),
         'no_of_chapters_taken': noOfChaptersTaken,
         'no_of_chapters_finished': noOfChaptersFinished,
+        'order': orderNum,
       });
     } else {
       return 'error';
@@ -239,19 +258,22 @@ class DatabaseService {
       }
     }
 
+    int orderNum = await sessionCollection
+        .doc(name)
+        .get()
+        .then((value) => value.data()['order']);
+
     if (chaptersTakenList[0].sessionName == '') {
-      chaptersTakenList[0] =
-          ChaptersTaken(sessionName: name, noOfChaptersTaken: 0);
-      return await readerCollection
-          .doc(uid)
-          .update({'chaptersTaken': jsonEncode(chaptersTakenList)});
+      chaptersTakenList[0] = ChaptersTaken(
+          sessionName: name, noOfChaptersTaken: 0, orderNum: orderNum);
     } else {
-      chaptersTakenList
-          .add(ChaptersTaken(sessionName: name, noOfChaptersTaken: 0));
-      return await readerCollection
-          .doc(uid)
-          .update({'chaptersTaken': jsonEncode(chaptersTakenList)});
+      chaptersTakenList.add(ChaptersTaken(
+          sessionName: name, noOfChaptersTaken: 0, orderNum: orderNum));
+      chaptersTakenList.sort((a, b) => a.orderNum.compareTo(b.orderNum));
     }
+    return await readerCollection
+        .doc(uid)
+        .update({'chaptersTaken': jsonEncode(chaptersTakenList)});
   }
 
   // to update the number of chpaters finished in a session
@@ -407,6 +429,7 @@ class DatabaseService {
   Stream<List<Session>> get session {
     return sessionCollection
         .where('readers', arrayContains: uid)
+        .orderBy('order', descending: false)
         .snapshots()
         .map(_sessionsListFromSnapshot);
   }

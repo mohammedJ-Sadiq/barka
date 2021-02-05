@@ -6,6 +6,7 @@ import 'package:barka/services/database.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 CollectionReference readerCollection =
     FirebaseFirestore.instance.collection('readers');
@@ -21,14 +22,15 @@ class ChapterList extends StatefulWidget {
 }
 
 class _ChapterListState extends State<ChapterList> {
+  final FirebaseAuth _auth = FirebaseAuth.instance;
   @override
   Widget build(BuildContext context) {
+    final currentUserUid = _auth.currentUser.uid;
     String _username = '';
     final chapters = Provider.of<List<ChapterAssignment>>(context) ?? [];
 
     Future<void> updateName() async {
-      await DatabaseService(
-              uid: Provider.of<CustomUser>(context, listen: false).uid)
+      await DatabaseService(uid: currentUserUid)
           .getUsernameFromUid()
           .then((value) => setState(() {
                 _username = value;
@@ -41,8 +43,6 @@ class _ChapterListState extends State<ChapterList> {
           return GestureDetector(
               onTap: () async {
                 String chapterUid = chapters[index].uid;
-                String currentUserUid =
-                    Provider.of<CustomUser>(context, listen: false).uid;
                 if (chapterUid == '') {
                   await updateName();
                   setState(() {

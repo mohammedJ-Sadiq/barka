@@ -6,6 +6,7 @@ class Session {
   final String chapters;
   final int noOfChaptersTaken;
   final int noOfChaptersFinished;
+  final int order;
 
   Session(
       {this.name,
@@ -14,5 +15,6 @@ class Session {
       this.readers,
       this.chapters,
       this.noOfChaptersTaken,
-      this.noOfChaptersFinished});
+      this.noOfChaptersFinished,
+      this.order});
 }

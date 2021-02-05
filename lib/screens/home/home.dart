@@ -9,15 +9,18 @@ import 'package:barka/shared/logo.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:provider/provider.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 GlobalKey<ScaffoldState> _key = GlobalKey();
 
 class Home extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    final FirebaseAuth _auth = FirebaseAuth.instance;
     Size size = MediaQuery.of(context).size;
     double width = size.width;
     double height = size.height;
+    final currentUserUid = _auth.currentUser.uid;
 
     String _calculateNoOfAllChaptersTaken(List<ChaptersTaken> chaptersTaken) {
       try {
@@ -59,18 +62,14 @@ class Home extends StatelessWidget {
     return MultiProvider(
         providers: [
           StreamProvider<List<Session>>.value(
-            value: DatabaseService(uid: Provider.of<CustomUser>(context).uid)
-                .session,
+            value: DatabaseService(uid: currentUserUid).session,
           ),
           StreamProvider<List<ChaptersTaken>>.value(
-            value: DatabaseService(uid: Provider.of<CustomUser>(context).uid)
-                .chapterTaken,
+            value: DatabaseService(uid: currentUserUid).chapterTaken,
           )
         ],
         child: StreamBuilder<List<ChaptersTaken>>(
-            stream: DatabaseService(uid: Provider.of<CustomUser>(context).uid)
-                    .chapterTaken ??
-                [],
+            stream: DatabaseService(uid: currentUserUid).chapterTaken ?? [],
             builder: (context, snapshot) {
               return Scaffold(
                 resizeToAvoidBottomInset: false,
@@ -141,7 +140,7 @@ class Home extends StatelessWidget {
                                   BorderRadius.all(Radius.circular(30)))),
                     ])),
                 drawer: MainDrawer(
-                  userUid: Provider.of<CustomUser>(context).uid,
+                  userUid: currentUserUid,
                 ),
               );
             }));

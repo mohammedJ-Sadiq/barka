@@ -10,6 +10,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:barka/models/custom_phoneUser.dart';
 import 'package:barka/screens/home/home.dart';
 import 'package:barka/screens/authenticate/authenticate.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 void main() {
   runApp(MyApp());
@@ -29,7 +30,7 @@ class MyApp extends StatelessWidget {
           case ConnectionState.waiting:
             return CircularProgressIndicator();
           case ConnectionState.done:
-            return StreamProvider<CustomUser>.value(
+            return StreamProvider<User>.value(
               value: AuthService().user,
               child: MaterialApp(
                 localizationsDelegates: [

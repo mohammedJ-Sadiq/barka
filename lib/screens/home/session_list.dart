@@ -36,7 +36,7 @@ class _SessionListState extends State<SessionList> {
             },
             child: SessionTile(
               session: sessions[index],
-              chaptersTaken: chaptersTaken[(chaptersTaken.length - 1) - index],
+              chaptersTaken: chaptersTaken[index],
             ),
           );
         });

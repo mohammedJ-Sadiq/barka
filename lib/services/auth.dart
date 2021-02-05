@@ -1,25 +1,22 @@
 import 'dart:async';
-
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:barka/models/custom_user.dart';
 import 'package:barka/services/database.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:barka/screens/authenticate/create_username_for_phoneuser.dart';
-import 'package:barka/models/custom_phoneUser.dart';
-import 'package:barka/screens/wrapper.dart';
 import 'package:flushbar/flushbar.dart';
 
 class AuthService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
   // create user obj based on FirebaseUser
-  CustomUser _userFromFirebaseUser(User user) {
+  User _userFromFirebaseUser(User user) {
     if (user != null) {
       if (user.email != null) {
-        return user.emailVerified ? CustomUser(uid: user.uid) : null;
-      } else {
-        return CustomUser(uid: user.uid);
+        return user.emailVerified ? user : null;
+      } else if (user.phoneNumber != null) {
+        return user;
       }
     }
     return null;
@@ -27,7 +24,7 @@ class AuthService {
 
   // auth change user stream
 
-  Stream<CustomUser> get user {
+  Stream<User> get user {
     return _auth.userChanges().map(_userFromFirebaseUser);
   }
 
@@ -143,9 +140,9 @@ class AuthService {
                             } else {
                               Navigator.pop(context);
                               Navigator.pop(context);
+                              return _userFromFirebaseUser(result.user);
                             }
                           }).catchError((e) {
-                            print(e.message);
                             showDialog(
                                 context: context,
                                 builder: (_) => new CupertinoAlertDialog(

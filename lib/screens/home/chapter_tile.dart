@@ -3,6 +3,7 @@ import 'package:barka/models/custom_user.dart';
 import 'package:barka/services/database.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class ChapterTile extends StatefulWidget {
   final ChapterAssignment chapter;
@@ -17,10 +18,12 @@ class ChapterTile extends StatefulWidget {
 class _ChapterTileState extends State<ChapterTile> {
   @override
   Widget build(BuildContext context) {
+    final FirebaseAuth _auth = FirebaseAuth.instance;
     // int _noOfChaptersFinished = widget.noOfChaptersFinished;
     Size size = MediaQuery.of(context).size;
     double width = size.width;
     double height = size.height;
+    final currentUserUid = _auth.currentUser.uid;
     if (widget.chapter.uid == '') {
       return Padding(
         padding: EdgeInsets.only(top: height * 0.01),
@@ -57,8 +60,7 @@ class _ChapterTileState extends State<ChapterTile> {
                     color: Colors.green[800],
                   ),
                   onPressed: () async {
-                    if (widget.chapter.uid ==
-                        Provider.of<CustomUser>(context, listen: false).uid) {
+                    if (widget.chapter.uid == currentUserUid) {
                       print(widget.noOfChaptersFinished);
                       setState(() {
                         widget.chapter.chapterStatus =
@@ -71,10 +73,7 @@ class _ChapterTileState extends State<ChapterTile> {
                       await DatabaseService(name: widget.sessionName)
                           .updateNoOfChaptersFinished();
                       await DatabaseService(
-                              name: widget.sessionName,
-                              uid: Provider.of<CustomUser>(context,
-                                      listen: false)
-                                  .uid)
+                              name: widget.sessionName, uid: currentUserUid)
                           .updateNoOfChaptersTakenForAUserWhenMarkedFinished(
                               false);
                     }
@@ -107,8 +106,7 @@ class _ChapterTileState extends State<ChapterTile> {
                     size: 35,
                   ),
                   onPressed: () async {
-                    if (widget.chapter.uid ==
-                        Provider.of<CustomUser>(context, listen: false).uid) {
+                    if (widget.chapter.uid == currentUserUid) {
                       setState(() {
                         widget.chapter.chapterStatus =
                             !widget.chapter.chapterStatus;
@@ -119,10 +117,7 @@ class _ChapterTileState extends State<ChapterTile> {
                       await DatabaseService(name: widget.sessionName)
                           .updateNoOfChaptersFinished();
                       await DatabaseService(
-                              name: widget.sessionName,
-                              uid: Provider.of<CustomUser>(context,
-                                      listen: false)
-                                  .uid)
+                              name: widget.sessionName, uid: currentUserUid)
                           .updateNoOfChaptersTakenForAUserWhenMarkedFinished(
                               true);
                     }
