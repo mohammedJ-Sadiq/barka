@@ -7,6 +7,7 @@ import 'package:barka/shared/logo.dart';
 import 'package:flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
 import 'package:barka/services/auth.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class Register extends StatefulWidget {
   final Function toggleView;
@@ -188,6 +189,8 @@ class _RegisterState extends State<Register> {
                                       loading = false;
                                     });
                                   } else {
+                                    await FirebaseAuth.instance.currentUser
+                                        .updateProfile(displayName: name);
                                     Flushbar(
                                       message:
                                           'تم إرسال رابط التحقق من البريد الألكتروني على  $email',

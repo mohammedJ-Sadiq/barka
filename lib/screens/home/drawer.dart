@@ -17,24 +17,24 @@ class MainDrawer extends StatefulWidget {
 
 class _MainDrawerState extends State<MainDrawer> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
-  String _username = '';
+  // String _username = '';
 
-  @override
-  void initState() {
-    super.initState();
-    DatabaseService(uid: _auth.currentUser.uid)
-        .getUsernameFromUid()
-        .then((value) => setState(() {
-              _username = value;
-            }));
-  }
+  // @override
+  // void initState() {
+  //   super.initState();
+  //   DatabaseService(uid: Provider.of<CustomUser>(context, listen: false).uid)
+  //       .getUsernameFromUid()
+  //       .then((value) => setState(() {
+  //             _username = value;
+  //           }));
+  // }
 
   @override
   Widget build(BuildContext context) {
-    final currentUserUid = _auth.currentUser.uid;
     Size size = MediaQuery.of(context).size;
     double width = size.width;
     double height = size.height;
+    final currentUser = Provider.of<CustomUser>(context);
     void _showCreatingNewSessionModal() {
       showDialog(
           context: context,
@@ -108,7 +108,7 @@ class _MainDrawerState extends State<MainDrawer> {
                         borderRadius: BorderRadius.all(Radius.circular(7))),
                     child: Center(
                       child: Text(
-                        _username,
+                        currentUser.name,
                         style: TextStyle(fontSize: 20, color: Colors.black),
                       ),
                     ),

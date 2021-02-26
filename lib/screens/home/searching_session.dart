@@ -18,7 +18,6 @@ class _SearchingSessionState extends State<SearchingSession> {
   bool _validate = true;
   String _error = '';
   String _currentName;
-  int _currentOrderNum;
   final _formKey1 = GlobalKey<FormState>();
 
   @override
@@ -31,6 +30,7 @@ class _SearchingSessionState extends State<SearchingSession> {
     Future<bool> joiningSession(String name) async {
       DocumentSnapshot doc = await sessionRef.doc(name).get();
       if (doc.exists) {
+        _validate = true;
         DatabaseService(uid: user.uid, name: name).joinSession(
             doc.data()['name'],
             doc.data()['description'],
@@ -116,8 +116,12 @@ class _SearchingSessionState extends State<SearchingSession> {
                         _error = "لاتوجد ختمة بهذا الأسم";
                       });
                     } else {
+                      setState(() {
+                        _error = '';
+                      });
                       await DatabaseService(uid: user.uid, name: _currentName)
                           .populateChaptersTakenWhenJoiningSession();
+                      Navigator.pop(context);
                       Navigator.pop(context);
                     }
                   }

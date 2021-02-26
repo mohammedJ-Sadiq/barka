@@ -16,7 +16,6 @@ class AddingSession extends StatefulWidget {
 }
 
 class _AddingSessionState extends State<AddingSession> {
-  final FirebaseAuth _auth = FirebaseAuth.instance;
   final _formKey0 = GlobalKey<FormState>();
   String _currentName;
   String _currentDescription;
@@ -24,7 +23,7 @@ class _AddingSessionState extends State<AddingSession> {
 
   @override
   Widget build(BuildContext context) {
-    final currentUserUid = _auth.currentUser.uid;
+    final currentUserUid = Provider.of<CustomUser>(context).uid;
     Size size = MediaQuery.of(context).size;
     double width = size.width;
     double height = size.height;

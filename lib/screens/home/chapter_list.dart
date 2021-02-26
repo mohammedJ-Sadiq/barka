@@ -22,20 +22,19 @@ class ChapterList extends StatefulWidget {
 }
 
 class _ChapterListState extends State<ChapterList> {
-  final FirebaseAuth _auth = FirebaseAuth.instance;
   @override
   Widget build(BuildContext context) {
-    final currentUserUid = _auth.currentUser.uid;
-    String _username = '';
+    final currentUserUid = Provider.of<CustomUser>(context).uid;
+    String _username = Provider.of<CustomUser>(context).name;
     final chapters = Provider.of<List<ChapterAssignment>>(context) ?? [];
 
-    Future<void> updateName() async {
-      await DatabaseService(uid: currentUserUid)
-          .getUsernameFromUid()
-          .then((value) => setState(() {
-                _username = value;
-              }));
-    }
+    // Future<void> updateName() async {
+    //   await DatabaseService(uid: currentUserUid)
+    //       .getUsernameFromUid()
+    //       .then((value) => setState(() {
+    //             _username = value;
+    //           }));
+    // }
 
     return ListView.builder(
         itemCount: chapters.length,
@@ -44,7 +43,6 @@ class _ChapterListState extends State<ChapterList> {
               onTap: () async {
                 String chapterUid = chapters[index].uid;
                 if (chapterUid == '') {
-                  await updateName();
                   setState(() {
                     chapters[index].uid = currentUserUid;
                     chapters[index].name = _username;

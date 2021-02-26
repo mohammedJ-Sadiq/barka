@@ -4,6 +4,7 @@ import 'package:barka/shared/logo.dart';
 import 'package:barka/shared/constants.dart';
 import 'package:barka/services/auth.dart';
 import 'package:barka/services/database.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class CreateUsernameForPhoneuser extends StatefulWidget {
   String uid;
@@ -102,8 +103,11 @@ class _CreateUsernameForPhoneuserState
                                   await DatabaseService(uid: widget.uid)
                                       .createUserData(name, widget.phoneNumber);
 
-                                  Navigator.pop(context);
-                                  Navigator.pop(context);
+                                  await FirebaseAuth.instance.currentUser
+                                      .updateProfile(displayName: name);
+
+                                  Navigator.of(context).pop();
+                                  Navigator.of(context).pop();
                                 }
                               })
                         ],

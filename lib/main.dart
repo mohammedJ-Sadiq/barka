@@ -1,8 +1,10 @@
 import 'package:barka/models/custom_user.dart';
 import 'package:barka/models/custom_user.dart';
+import 'package:barka/route_generator.dart';
 import 'package:barka/screens/wrapper.dart';
 import 'package:barka/services/auth.dart';
 import 'package:barka/shared/loading.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:provider/provider.dart';
@@ -17,6 +19,7 @@ void main() {
 }
 
 class MyApp extends StatelessWidget {
+  final globalScaffoldKey = GlobalKey<ScaffoldState>();
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
@@ -30,7 +33,7 @@ class MyApp extends StatelessWidget {
           case ConnectionState.waiting:
             return CircularProgressIndicator();
           case ConnectionState.done:
-            return StreamProvider<User>.value(
+            return StreamProvider<CustomUser>.value(
               value: AuthService().user,
               child: MaterialApp(
                 localizationsDelegates: [
@@ -46,11 +49,7 @@ class MyApp extends StatelessWidget {
                 ],
                 locale: Locale('ar', 'AE'),
                 initialRoute: '/',
-                routes: {
-                  '/': (context) => Wrapper(),
-                  '/home': (context) => Home(),
-                  '/authenticate': (context) => Authenticate(),
-                },
+                onGenerateRoute: RouteGenerator.generateRoute,
               ),
             );
           default:

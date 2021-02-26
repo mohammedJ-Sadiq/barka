@@ -18,12 +18,11 @@ class ChapterTile extends StatefulWidget {
 class _ChapterTileState extends State<ChapterTile> {
   @override
   Widget build(BuildContext context) {
-    final FirebaseAuth _auth = FirebaseAuth.instance;
     // int _noOfChaptersFinished = widget.noOfChaptersFinished;
     Size size = MediaQuery.of(context).size;
     double width = size.width;
     double height = size.height;
-    final currentUserUid = _auth.currentUser.uid;
+    final currentUserUid = Provider.of<CustomUser>(context).uid;
     if (widget.chapter.uid == '') {
       return Padding(
         padding: EdgeInsets.only(top: height * 0.01),

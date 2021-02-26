@@ -1,30 +1,32 @@
 import 'dart:async';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:barka/models/custom_user.dart';
 import 'package:barka/services/database.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:barka/screens/authenticate/create_username_for_phoneuser.dart';
 import 'package:flushbar/flushbar.dart';
+import 'package:barka/models/custom_user.dart';
 
 class AuthService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
   // create user obj based on FirebaseUser
-  User _userFromFirebaseUser(User user) {
+  CustomUser _userFromFirebaseUser(User user) {
     if (user != null) {
-      if (user.email != null) {
-        return user.emailVerified ? user : null;
-      } else if (user.phoneNumber != null) {
-        return user;
+      if (user.email != '' && user.email != null) {
+        return user.emailVerified
+            ? CustomUser(uid: user.uid, name: user.displayName)
+            : null;
       }
+
+      return CustomUser(uid: user.uid, name: user.displayName);
     }
     return null;
   }
 
   // auth change user stream
 
-  Stream<User> get user {
+  Stream<CustomUser> get user {
     return _auth.userChanges().map(_userFromFirebaseUser);
   }
 
@@ -75,17 +77,16 @@ class AuthService {
 
   // Sign up with phone number
   final _codeController = TextEditingController();
+  bool _autoCodeRetrieval = false;
   Future createUserWithPhoneNumber(
       String phoneNumber, BuildContext context) async {
     _auth.verifyPhoneNumber(
         phoneNumber: phoneNumber,
-        timeout: Duration(seconds: 60),
-        verificationCompleted: (AuthCredential authCredential) {
-          _auth
-              .signInWithCredential(authCredential)
-              .then((UserCredential result) {
-            if (result.additionalUserInfo.isNewUser) {
-              Navigator.push(
+        timeout: const Duration(seconds: 30),
+        verificationCompleted: (PhoneAuthCredential authCredential) async {
+          await _auth.signInWithCredential(authCredential).then((result) {
+            if (result.user.displayName == null) {
+              return Navigator.pushReplacement(
                   context,
                   MaterialPageRoute(
                       builder: (context) => CreateUsernameForPhoneuser(
@@ -93,14 +94,18 @@ class AuthService {
                             phoneNumber: phoneNumber,
                           )));
             }
+            _autoCodeRetrieval = true;
+            Navigator.of(context).pop();
+            Navigator.of(context).pop();
+            return _userFromFirebaseUser(result.user);
           }).catchError((e) {
-            return e.toString();
+            e.toString();
           });
         },
         verificationFailed: (FirebaseAuthException exception) {
           return exception.toString();
         },
-        codeSent: (String verficationId, [int forceResendingToken]) {
+        codeSent: (String verficationId, [int forceResendingToken]) async {
           showDialog(
               context: context,
               barrierDismissible: false,
@@ -120,16 +125,16 @@ class AuthService {
                         textColor: Colors.white,
                         color: Colors.green,
                         onPressed: () async {
-                          var _credential = PhoneAuthProvider.credential(
-                              verificationId: verficationId,
-                              smsCode: _codeController.text.trim());
-
+                          PhoneAuthCredential authCredential =
+                              PhoneAuthProvider.credential(
+                                  verificationId: verficationId,
+                                  smsCode: _codeController.text.trim());
                           await _auth
-                              .signInWithCredential(_credential)
-                              .then((UserCredential result) {
-                            print(result.additionalUserInfo.isNewUser);
-                            if (result.additionalUserInfo.isNewUser) {
-                              Navigator.pushReplacement(
+                              .signInWithCredential(authCredential)
+                              .then((result) async {
+                            if (result.user.displayName == null) {
+                              _autoCodeRetrieval = true;
+                              return Navigator.pushReplacement(
                                   context,
                                   MaterialPageRoute(
                                       builder: (context) =>
@@ -137,11 +142,10 @@ class AuthService {
                                             uid: result.user.uid,
                                             phoneNumber: phoneNumber,
                                           )));
-                            } else {
-                              Navigator.pop(context);
-                              Navigator.pop(context);
-                              return _userFromFirebaseUser(result.user);
                             }
+                            _autoCodeRetrieval = true;
+                            Navigator.of(context).pop();
+                            Navigator.of(context).pop();
                           }).catchError((e) {
                             showDialog(
                                 context: context,
@@ -162,9 +166,8 @@ class AuthService {
                                         FlatButton(
                                           child: Text('خروج'),
                                           onPressed: () {
-                                            Navigator.of(context).pop();
-                                            Navigator.of(context).pop();
-                                            Navigator.of(context).pop();
+                                            Navigator.of(context)
+                                                .pushReplacementNamed('/');
                                           },
                                         )
                                       ],
@@ -175,24 +178,29 @@ class AuthService {
                     ],
                   ));
         },
-        codeAutoRetrievalTimeout: (String verificaionId) {
+        codeAutoRetrievalTimeout: (String verificaionId) async {
           verificaionId = verificaionId;
           print(verificaionId);
-          Flushbar(
-            message: 'انتهى الوقت المحدد لإدخال رمز التحقق',
-            duration: Duration(seconds: 3),
-            isDismissible: true,
-            mainButton: FlatButton(
-              child: Text('OK'),
-              onPressed: () {
-                Navigator.pop(context);
-              },
-            ),
-          )..show(context);
-          Timer(Duration(seconds: 5), () {
-            Navigator.pop(context);
-            Navigator.pop(context);
-          });
+          print('auto code retrival: $_autoCodeRetrieval');
+
+          if (!_autoCodeRetrieval) {
+            Flushbar(
+              message: 'انتهى الوقت المحدد لإدخال رمز التحقق',
+              duration: Duration(seconds: 3),
+              isDismissible: true,
+              mainButton: FlatButton(
+                child: Text('OK'),
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+              ),
+            )..show(context);
+            Timer(Duration(seconds: 5), () {
+              Navigator.of(context).pop();
+              return Navigator.of(context).pop();
+            });
+          }
+          return null;
         });
   }
 

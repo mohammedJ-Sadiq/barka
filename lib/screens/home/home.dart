@@ -20,7 +20,7 @@ class Home extends StatelessWidget {
     Size size = MediaQuery.of(context).size;
     double width = size.width;
     double height = size.height;
-    final currentUserUid = _auth.currentUser.uid;
+    final currentUserUid = Provider.of<CustomUser>(context).uid;
 
     String _calculateNoOfAllChaptersTaken(List<ChaptersTaken> chaptersTaken) {
       try {
